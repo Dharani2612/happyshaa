@@ -50,16 +50,24 @@ export default {
       },
       backgroundImage: {
         'gradient-primary': 'var(--gradient-primary)',
-        'gradient-healing': 'var(--gradient-healing)',
-        'gradient-calm': 'var(--gradient-calm)',
+        'gradient-companionship': 'var(--gradient-companionship)',
+        'gradient-warmth': 'var(--gradient-warmth)',
       },
       boxShadow: {
         'gentle': 'var(--shadow-gentle)',
-        'therapeutic': 'var(--shadow-therapeutic)',
+        'companionship': 'var(--shadow-companionship)',
       },
       transitionTimingFunction: {
-        'therapeutic': 'var(--transition-therapeutic)',
+        'companionship': 'var(--transition-companionship)',
         'gentle': 'var(--transition-gentle)',
+      },
+      fontSize: {
+        'elder-sm': '0.9rem',
+        'elder-base': '1.1rem',
+        'elder-lg': '1.3rem',
+        'elder-xl': '1.5rem',
+        'elder-2xl': '1.8rem',
+        'elder-3xl': '2.2rem',
       },
       borderRadius: {
         lg: "var(--radius)",

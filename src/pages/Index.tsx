@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MessageCircle, Heart, BarChart3, Book, Brain, Smile } from "lucide-react";
+import { MessageCircle, Heart, BarChart3, Book, Users, Smile, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ChatInterface } from "@/components/ChatInterface";
@@ -29,88 +29,96 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-healing">
+    <div className="min-h-screen bg-gradient-companionship">
       {/* Header */}
-      <header className="bg-card/80 backdrop-blur-sm border-b border-border/50 shadow-gentle">
-        <div className="container mx-auto px-4 py-4">
+      <header className="bg-card/90 backdrop-blur-sm border-b border-border shadow-companionship">
+        <div className="container mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center">
-                <Heart className="w-5 h-5 text-primary-foreground" />
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center shadow-gentle">
+                <Heart className="w-6 h-6 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-foreground">WellMind</h1>
-                <p className="text-xs text-muted-foreground">Your Mental Wellness Companion</p>
+                <h1 className="text-elder-2xl font-bold text-foreground">Companion</h1>
+                <p className="text-elder-base text-muted-foreground">Your caring companion, always here for you</p>
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <Button
-                variant={activeView === "chat" ? "therapeutic" : "healing"}
-                size="sm"
+                variant={activeView === "chat" ? "companionship" : "nurturing"}
+                size="lg"
                 onClick={() => setActiveView("chat")}
               >
-                <MessageCircle className="w-4 h-4" />
-                Chat
+                <MessageCircle className="w-5 h-5" />
+                <span className="hidden sm:inline">Chat</span>
               </Button>
               <Button
-                variant={activeView === "mood" ? "therapeutic" : "healing"}
-                size="sm"
+                variant={activeView === "mood" ? "companionship" : "nurturing"}
+                size="lg"
                 onClick={() => setActiveView("mood")}
               >
-                <Smile className="w-4 h-4" />
-                Mood
+                <Smile className="w-5 h-5" />
+                <span className="hidden sm:inline">Mood</span>
               </Button>
               <Button
-                variant={activeView === "dashboard" ? "therapeutic" : "healing"}
-                size="sm"
+                variant={activeView === "dashboard" ? "companionship" : "nurturing"}
+                size="lg"
                 onClick={() => setActiveView("dashboard")}
               >
-                <BarChart3 className="w-4 h-4" />
-                Dashboard
+                <BarChart3 className="w-5 h-5" />
+                <span className="hidden sm:inline">Progress</span>
               </Button>
               <Button
-                variant={activeView === "exercises" ? "therapeutic" : "healing"}
-                size="sm"
+                variant={activeView === "exercises" ? "companionship" : "nurturing"}
+                size="lg"
                 onClick={() => setActiveView("exercises")}
               >
-                <Brain className="w-4 h-4" />
-                Exercises
+                <Users className="w-5 h-5" />
+                <span className="hidden sm:inline">Activities</span>
               </Button>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Hero Section - Only show on chat view */}
+      {/* Welcome Section - Only show on chat view */}
       {activeView === "chat" && (
-        <div className="relative overflow-hidden bg-gradient-primary">
+        <div className="relative overflow-hidden bg-gradient-primary shadow-companionship">
           <img 
             src={heroImage} 
-            alt="Therapeutic wellness background" 
-            className="absolute inset-0 w-full h-32 object-cover opacity-20"
+            alt="Warm, welcoming companion space" 
+            className="absolute inset-0 w-full h-40 object-cover opacity-25"
           />
-          <div className="relative container mx-auto px-4 py-8">
-            <div className="text-center text-primary-foreground">
-              <h2 className="text-2xl font-bold mb-2">Hello, I'm here to support you</h2>
-              <p className="text-primary-foreground/80">Let's have a conversation about how you're feeling today</p>
+          <div className="relative container mx-auto px-6 py-12">
+            <div className="text-center text-primary-foreground max-w-2xl mx-auto">
+              <h2 className="text-elder-3xl font-bold mb-4">Welcome, dear friend</h2>
+              <p className="text-elder-xl text-primary-foreground/90 mb-6">
+                You're not alone. I'm here to listen, chat, and keep you company whenever you need it.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button variant="comfort" size="lg" className="text-elder-lg">
+                  <Phone className="w-6 h-6" />
+                  Emergency Support: 988
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-6 py-8">
         {renderContent()}
       </main>
 
       {/* Footer */}
-      <footer className="bg-card/50 border-t border-border/50 mt-12">
-        <div className="container mx-auto px-4 py-6 text-center">
-          <p className="text-sm text-muted-foreground">
-            WellMind - Supporting your mental wellness journey
+      <footer className="bg-card/80 border-t border-border shadow-gentle mt-16">
+        <div className="container mx-auto px-6 py-8 text-center">
+          <p className="text-elder-lg text-muted-foreground font-semibold">
+            Companion - You always have a friend here
           </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Remember: This app provides supportive conversations and is not a replacement for professional mental health care.
+          <p className="text-elder-base text-muted-foreground mt-3">
+            This app provides friendly conversation and emotional support. For mental health emergencies, please call 988 or your local crisis line.
           </p>
         </div>
       </footer>

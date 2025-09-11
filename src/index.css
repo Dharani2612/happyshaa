@@ -2,63 +2,63 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Mental Health App Design System - Therapeutic & Calming 
-All colors MUST be HSL.
+/* Elder-Friendly Companion App Design System - Warm & Accessible 
+All colors MUST be HSL. High contrast for better visibility.
 */
 
 @layer base {
   :root {
-    /* Therapeutic Background Palette */
-    --background: 210 25% 98%;
-    --foreground: 215 25% 26%;
+    /* Warm, High-Contrast Background Palette */
+    --background: 45 25% 96%;
+    --foreground: 210 15% 15%;
 
-    /* Card & Surface Colors */
+    /* Card & Surface Colors - Warmer tones */
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 26%;
+    --card-foreground: 210 15% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 26%;
+    --popover-foreground: 210 15% 15%;
 
-    /* Therapeutic Primary - Calming Blue */
-    --primary: 200 85% 60%;
+    /* Companionship Primary - Warm, Trustworthy Blue */
+    --primary: 210 75% 45%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 200 85% 75%;
+    --primary-glow: 210 75% 65%;
 
-    /* Soothing Secondary - Sage Green */
-    --secondary: 150 30% 85%;
-    --secondary-foreground: 150 40% 25%;
+    /* Nurturing Secondary - Warm Sage */
+    --secondary: 140 25% 75%;
+    --secondary-foreground: 140 30% 20%;
 
-    /* Muted Therapeutic Tones */
-    --muted: 210 15% 93%;
-    --muted-foreground: 215 20% 50%;
+    /* Gentle Muted Tones - Higher contrast */
+    --muted: 45 15% 88%;
+    --muted-foreground: 210 15% 35%;
 
-    /* Gentle Accent - Warm Lavender */
-    --accent: 260 40% 85%;
-    --accent-foreground: 260 40% 25%;
+    /* Comforting Accent - Soft Peach */
+    --accent: 25 45% 80%;
+    --accent-foreground: 25 35% 25%;
 
-    /* Soft Warning - Warm Coral */
-    --destructive: 15 75% 65%;
+    /* Gentle Warning - Soft Coral */
+    --destructive: 15 65% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Subtle Borders & Inputs */
-    --border: 210 20% 88%;
-    --input: 210 20% 92%;
-    --ring: 200 85% 60%;
+    /* Clear, Defined Borders & Inputs */
+    --border: 210 15% 80%;
+    --input: 210 15% 92%;
+    --ring: 210 75% 45%;
 
     /* Enhanced Radius for Soft Feel */
     --radius: 0.75rem;
 
-    /* Therapeutic Gradients */
+    /* Warm, Comforting Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-healing: linear-gradient(180deg, hsl(200 85% 95%), hsl(150 30% 95%));
-    --gradient-calm: linear-gradient(45deg, hsl(var(--accent)), hsl(var(--secondary)));
+    --gradient-companionship: linear-gradient(180deg, hsl(45 35% 95%), hsl(25 35% 92%));
+    --gradient-warmth: linear-gradient(45deg, hsl(var(--accent)), hsl(var(--secondary)));
 
-    /* Wellness Shadows */
-    --shadow-gentle: 0 4px 20px -4px hsl(var(--primary) / 0.15);
-    --shadow-therapeutic: 0 8px 32px -8px hsl(var(--primary) / 0.2);
+    /* Comforting Shadows - More defined for better visibility */
+    --shadow-gentle: 0 6px 25px -6px hsl(var(--primary) / 0.25);
+    --shadow-companionship: 0 10px 35px -10px hsl(var(--primary) / 0.3);
 
-    /* Smooth Therapeutic Animations */
-    --transition-therapeutic: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* Gentle, Reassuring Animations */
+    --transition-companionship: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     --transition-gentle: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 98%;
@@ -79,47 +79,47 @@ All colors MUST be HSL.
   }
 
   .dark {
-    /* Dark Mode Therapeutic Colors */
-    --background: 215 25% 8%;
-    --foreground: 210 25% 90%;
+    /* Dark Mode - Warm & Comforting Colors */
+    --background: 210 15% 12%;
+    --foreground: 45 25% 92%;
 
-    --card: 215 25% 10%;
-    --card-foreground: 210 25% 90%;
+    --card: 210 15% 16%;
+    --card-foreground: 45 25% 92%;
 
-    --popover: 215 25% 10%;
-    --popover-foreground: 210 25% 90%;
+    --popover: 210 15% 16%;
+    --popover-foreground: 45 25% 92%;
 
-    /* Dark Mode Primary - Softer Blue */
-    --primary: 200 70% 70%;
-    --primary-foreground: 215 25% 8%;
-    --primary-glow: 200 70% 80%;
+    /* Dark Mode Primary - Warm, Trustworthy */
+    --primary: 210 65% 65%;
+    --primary-foreground: 210 15% 12%;
+    --primary-glow: 210 65% 75%;
 
-    /* Dark Mode Secondary - Muted Green */
-    --secondary: 150 20% 20%;
-    --secondary-foreground: 150 30% 85%;
+    /* Dark Mode Secondary - Gentle Green */
+    --secondary: 140 20% 25%;
+    --secondary-foreground: 140 25% 80%;
 
-    --muted: 215 20% 15%;
-    --muted-foreground: 215 15% 60%;
+    --muted: 210 12% 20%;
+    --muted-foreground: 210 15% 70%;
 
-    /* Dark Mode Accent - Soft Lavender */
-    --accent: 260 30% 25%;
-    --accent-foreground: 260 40% 85%;
+    /* Dark Mode Accent - Warm Peach */
+    --accent: 25 35% 30%;
+    --accent-foreground: 25 45% 85%;
 
-    --destructive: 15 65% 60%;
-    --destructive-foreground: 210 25% 90%;
+    --destructive: 15 55% 55%;
+    --destructive-foreground: 45 25% 92%;
 
-    --border: 215 20% 18%;
-    --input: 215 20% 18%;
-    --ring: 200 70% 70%;
+    --border: 210 12% 25%;
+    --input: 210 12% 25%;
+    --ring: 210 65% 65%;
 
     /* Dark Mode Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-healing: linear-gradient(180deg, hsl(215 25% 12%), hsl(150 20% 15%));
-    --gradient-calm: linear-gradient(45deg, hsl(var(--accent)), hsl(var(--secondary)));
+    --gradient-companionship: linear-gradient(180deg, hsl(210 15% 14%), hsl(25 15% 18%));
+    --gradient-warmth: linear-gradient(45deg, hsl(var(--accent)), hsl(var(--secondary)));
 
     /* Dark Mode Shadows */
-    --shadow-gentle: 0 4px 20px -4px hsl(200 70% 70% / 0.1);
-    --shadow-therapeutic: 0 8px 32px -8px hsl(200 70% 70% / 0.15);
+    --shadow-gentle: 0 6px 25px -6px hsl(210 65% 65% / 0.15);
+    --shadow-companionship: 0 10px 35px -10px hsl(210 65% 65% / 0.2);
   }
 }
 
@@ -130,5 +130,15 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-size: 16px; /* Larger base font size for elderly users */
+    line-height: 1.6; /* Better readability */
   }
+
+  /* Elder-friendly text sizes */
+  .text-elder-sm { font-size: 0.9rem; }
+  .text-elder-base { font-size: 1.1rem; }
+  .text-elder-lg { font-size: 1.3rem; }
+  .text-elder-xl { font-size: 1.5rem; }
+  .text-elder-2xl { font-size: 1.8rem; }
+  .text-elder-3xl { font-size: 2.2rem; }
 }
