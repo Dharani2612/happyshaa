@@ -14,7 +14,7 @@ interface SoundTrack {
   color: string;
 }
 
-const Music = () => {
+const MusicPlayer = () => {
   const [currentTrack, setCurrentTrack] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
@@ -351,4 +351,4 @@ const Music = () => {
   );
 };
 
-export default Music;
+export default MusicPlayer;
