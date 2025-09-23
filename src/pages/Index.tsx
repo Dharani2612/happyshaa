@@ -7,7 +7,7 @@ import { MoodJournal } from "@/components/MoodJournal";
 import { Dashboard } from "@/components/Dashboard";
 import { CBTExercises } from "@/components/CBTExercises";
 import Games from "@/components/Games";
-import MusicPlayer from "@/components/Music";
+import Music from "@/components/Music";
 import Doodle from "@/components/Doodle";
 import Journal from "@/components/Journal";
 import heroImage from "@/assets/hero-wellness.jpg";
@@ -30,7 +30,7 @@ const Index = () => {
       case "games":
         return <Games />;
       case "music":
-        return <MusicPlayer />;
+        return <Music />;
       case "doodle":
         return <Doodle />;
       case "journal":
