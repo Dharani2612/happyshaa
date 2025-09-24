@@ -49,9 +49,21 @@ const Doodle = () => {
       backgroundColor: "#ffffff",
     });
 
-    // Initialize the freeDrawingBrush
-    canvas.freeDrawingBrush.color = activeColor;
-    canvas.freeDrawingBrush.width = brushSize;
+    // Try to initialize the freeDrawingBrush safely
+    try {
+      // Enable drawing mode briefly to ensure brush is initialized
+      canvas.isDrawingMode = true;
+      
+      if (canvas.freeDrawingBrush) {
+        canvas.freeDrawingBrush.color = activeColor;
+        canvas.freeDrawingBrush.width = brushSize;
+      }
+      
+      // Reset to selection mode initially
+      canvas.isDrawingMode = false;
+    } catch (error) {
+      console.warn("Could not initialize freeDrawingBrush:", error);
+    }
 
     setFabricCanvas(canvas);
     toast("Canvas ready! Start creating! 🎨");
@@ -64,11 +76,32 @@ const Doodle = () => {
   useEffect(() => {
     if (!fabricCanvas) return;
 
+    // Set drawing mode based on active tool
     fabricCanvas.isDrawingMode = activeTool === "draw";
     
-    if (activeTool === "draw" && fabricCanvas.freeDrawingBrush) {
-      fabricCanvas.freeDrawingBrush.color = activeColor;
-      fabricCanvas.freeDrawingBrush.width = brushSize;
+    // Handle brush properties when in drawing mode
+    if (activeTool === "draw") {
+      // Try to ensure the brush exists and set properties
+      try {
+        if (fabricCanvas.freeDrawingBrush) {
+          fabricCanvas.freeDrawingBrush.color = activeColor;
+          fabricCanvas.freeDrawingBrush.width = brushSize;
+        } else {
+          // Manually trigger drawing mode to initialize brush
+          fabricCanvas.isDrawingMode = false;
+          fabricCanvas.isDrawingMode = true;
+          
+          // Try again after toggling
+          if (fabricCanvas.freeDrawingBrush) {
+            fabricCanvas.freeDrawingBrush.color = activeColor;
+            fabricCanvas.freeDrawingBrush.width = brushSize;
+          } else {
+            console.warn("FreeDrawingBrush not available in Fabric.js v6");
+          }
+        }
+      } catch (error) {
+        console.error("Error setting brush properties:", error);
+      }
     }
   }, [activeTool, activeColor, brushSize, fabricCanvas]);
 
