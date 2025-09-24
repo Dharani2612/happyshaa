@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MessageCircle, Heart, BarChart3, Book, Users, Smile, Phone, Gamepad2, Music2, Palette, BookOpen } from "lucide-react";
+import { MessageCircle, Heart, BarChart3, Book, Users, Smile, Phone, Gamepad2, Music2, Palette, BookOpen, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ChatInterface } from "@/components/ChatInterface";
@@ -7,12 +7,13 @@ import { MoodJournal } from "@/components/MoodJournal";
 import { Dashboard } from "@/components/Dashboard";
 import { CBTExercises } from "@/components/CBTExercises";
 import Games from "@/components/Games";
-import MusicPlayer from "@/components/Music";
+import Spotify from "@/components/Spotify";
 import Doodle from "@/components/Doodle";
 import Journal from "@/components/Journal";
+import NotePad from "@/components/NotePad";
 import heroImage from "@/assets/hero-wellness.jpg";
 
-type ActiveView = "chat" | "mood" | "dashboard" | "exercises" | "games" | "music" | "doodle" | "journal";
+type ActiveView = "chat" | "mood" | "dashboard" | "exercises" | "games" | "music" | "doodle" | "journal" | "notepad";
 
 const Index = () => {
   const [activeView, setActiveView] = useState<ActiveView>("chat");
@@ -30,18 +31,20 @@ const Index = () => {
       case "games":
         return <Games />;
       case "music":
-        return <MusicPlayer />;
+        return <Spotify />;
       case "doodle":
         return <Doodle />;
       case "journal":
         return <Journal />;
+      case "notepad":
+        return <NotePad />;
       default:
         return <ChatInterface />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-companionship">
+    <div className="min-h-screen bg-gradient-fun">
       {/* Header */}
       <header className="bg-card/90 backdrop-blur-sm border-b border-border shadow-companionship">
         <div className="container mx-auto px-6 py-6">
@@ -105,6 +108,14 @@ const Index = () => {
                 <span className="hidden sm:inline ml-1">Journal</span>
               </Button>
               <Button
+                variant={activeView === "notepad" ? "companionship" : "nurturing"}
+                size="sm"
+                onClick={() => setActiveView("notepad")}
+              >
+                <Calendar className="w-4 h-4" />
+                <span className="hidden sm:inline ml-1">Notes</span>
+              </Button>
+              <Button
                 variant={activeView === "dashboard" ? "companionship" : "nurturing"}
                 size="sm"
                 onClick={() => setActiveView("dashboard")}
@@ -127,22 +138,24 @@ const Index = () => {
 
       {/* Welcome Section - Only show on chat view */}
       {activeView === "chat" && (
-        <div className="relative overflow-hidden bg-gradient-primary shadow-companionship">
+        <div className="relative overflow-hidden bg-gradient-rainbow shadow-colorful">
           <img 
             src={heroImage} 
             alt="Warm, welcoming companion space" 
-            className="absolute inset-0 w-full h-40 object-cover opacity-25"
+            className="absolute inset-0 w-full h-40 object-cover opacity-20"
           />
           <div className="relative container mx-auto px-6 py-12">
-            <div className="text-center text-primary-foreground max-w-2xl mx-auto">
-              <h2 className="text-elder-3xl font-bold mb-4">Welcome, dear friend</h2>
-              <p className="text-elder-xl text-primary-foreground/90 mb-6">
-                You're not alone. I'm here to listen, chat, and keep you company whenever you need it.
+            <div className="text-center text-white max-w-2xl mx-auto">
+              <h2 className="text-elder-3xl font-bold mb-4 drop-shadow-lg">
+                🌈 Welcome, Beautiful Soul! 🌈
+              </h2>
+              <p className="text-elder-xl text-white/95 mb-6 drop-shadow-md">
+                ✨ You're amazing and you matter! I'm here to brighten your day with colorful activities and loving support. ✨
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button variant="comfort" size="lg" className="text-elder-lg">
-                  <Phone className="w-6 h-6" />
-                  Emergency Support: 988
+                <Button variant="companionship" size="lg" className="text-elder-lg bg-white/20 hover:bg-white/30 backdrop-blur-sm shadow-colorful">
+                  <Phone className="w-6 h-6 mr-2" />
+                  💜 Emergency Support: 988
                 </Button>
               </div>
             </div>
