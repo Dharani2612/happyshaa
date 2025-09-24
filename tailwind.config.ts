@@ -52,13 +52,10 @@ export default {
         'gradient-primary': 'var(--gradient-primary)',
         'gradient-companionship': 'var(--gradient-companionship)',
         'gradient-warmth': 'var(--gradient-warmth)',
-        'gradient-rainbow': 'var(--gradient-rainbow)',
-        'gradient-fun': 'var(--gradient-fun)',
       },
       boxShadow: {
         'gentle': 'var(--shadow-gentle)',
         'companionship': 'var(--shadow-companionship)',
-        'colorful': 'var(--shadow-colorful)',
       },
       transitionTimingFunction: {
         'companionship': 'var(--transition-companionship)',

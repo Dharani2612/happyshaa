@@ -49,17 +49,20 @@ const Doodle = () => {
       backgroundColor: "#ffffff",
     });
 
-    // Initialize drawing mode properly for Fabric.js v6
+    // Try to initialize the freeDrawingBrush safely
     try {
-      // Set initial drawing mode to false
+      // Enable drawing mode briefly to ensure brush is initialized
+      canvas.isDrawingMode = true;
+      
+      if (canvas.freeDrawingBrush) {
+        canvas.freeDrawingBrush.color = activeColor;
+        canvas.freeDrawingBrush.width = brushSize;
+      }
+      
+      // Reset to selection mode initially
       canvas.isDrawingMode = false;
-      
-      // Set up initial tool as select
-      setActiveTool("select");
-      
-      console.log("Canvas initialized successfully");
     } catch (error) {
-      console.warn("Canvas initialization warning:", error);
+      console.warn("Could not initialize freeDrawingBrush:", error);
     }
 
     setFabricCanvas(canvas);
@@ -73,31 +76,32 @@ const Doodle = () => {
   useEffect(() => {
     if (!fabricCanvas) return;
 
-    console.log("Setting tool:", activeTool);
-    
     // Set drawing mode based on active tool
     fabricCanvas.isDrawingMode = activeTool === "draw";
     
     // Handle brush properties when in drawing mode
     if (activeTool === "draw") {
-      // Force recreation of drawing mode to ensure brush initialization
-      fabricCanvas.isDrawingMode = false;
-      setTimeout(() => {
-        fabricCanvas.isDrawingMode = true;
-        
-        // Now try to set brush properties
-        try {
+      // Try to ensure the brush exists and set properties
+      try {
+        if (fabricCanvas.freeDrawingBrush) {
+          fabricCanvas.freeDrawingBrush.color = activeColor;
+          fabricCanvas.freeDrawingBrush.width = brushSize;
+        } else {
+          // Manually trigger drawing mode to initialize brush
+          fabricCanvas.isDrawingMode = false;
+          fabricCanvas.isDrawingMode = true;
+          
+          // Try again after toggling
           if (fabricCanvas.freeDrawingBrush) {
             fabricCanvas.freeDrawingBrush.color = activeColor;
             fabricCanvas.freeDrawingBrush.width = brushSize;
-            console.log("Brush properties set:", activeColor, brushSize);
           } else {
-            console.warn("freeDrawingBrush still not available");
+            console.warn("FreeDrawingBrush not available in Fabric.js v6");
           }
-        } catch (error) {
-          console.error("Error setting brush properties:", error);
         }
-      }, 10);
+      } catch (error) {
+        console.error("Error setting brush properties:", error);
+      }
     }
   }, [activeTool, activeColor, brushSize, fabricCanvas]);
 

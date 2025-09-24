@@ -8,61 +8,54 @@ All colors MUST be HSL. High contrast for better visibility.
 
 @layer base {
   :root {
-    /* Vibrant, Colorful Background Palette */
-    --background: 280 15% 97%;
-    --foreground: 260 15% 15%;
+    /* Warm, High-Contrast Background Palette */
+    --background: 45 25% 96%;
+    --foreground: 210 15% 15%;
 
-    /* Card & Surface Colors - More vibrant */
+    /* Card & Surface Colors - Warmer tones */
     --card: 0 0% 100%;
-    --card-foreground: 260 15% 15%;
+    --card-foreground: 210 15% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 260 15% 15%;
+    --popover-foreground: 210 15% 15%;
 
-    /* Primary - Vibrant Purple */
-    --primary: 270 85% 60%;
+    /* Companionship Primary - Warm, Trustworthy Blue */
+    --primary: 210 75% 45%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 270 85% 75%;
+    --primary-glow: 210 75% 65%;
 
-    /* Secondary - Bright Teal */
-    --secondary: 180 70% 50%;
-    --secondary-foreground: 180 100% 15%;
+    /* Nurturing Secondary - Warm Sage */
+    --secondary: 140 25% 75%;
+    --secondary-foreground: 140 30% 20%;
 
-    /* Muted - Soft lavender */
-    --muted: 280 25% 92%;
-    --muted-foreground: 260 15% 40%;
+    /* Gentle Muted Tones - Higher contrast */
+    --muted: 45 15% 88%;
+    --muted-foreground: 210 15% 35%;
 
-    /* Accent - Vibrant Orange */
-    --accent: 30 90% 65%;
-    --accent-foreground: 30 100% 15%;
+    /* Comforting Accent - Soft Peach */
+    --accent: 25 45% 80%;
+    --accent-foreground: 25 35% 25%;
 
-    /* Success - Bright Green */
-    --success: 120 70% 50%;
-    --success-foreground: 0 0% 100%;
-
-    /* Warning - Vibrant Coral */
-    --destructive: 15 85% 60%;
+    /* Gentle Warning - Soft Coral */
+    --destructive: 15 65% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Clear, Colorful Borders & Inputs */
-    --border: 280 25% 85%;
-    --input: 280 20% 94%;
-    --ring: 270 85% 60%;
+    /* Clear, Defined Borders & Inputs */
+    --border: 210 15% 80%;
+    --input: 210 15% 92%;
+    --ring: 210 75% 45%;
 
     /* Enhanced Radius for Soft Feel */
     --radius: 0.75rem;
 
-    /* Vibrant, Colorful Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
-    --gradient-companionship: linear-gradient(135deg, hsl(270 85% 60%), hsl(180 70% 50%));
+    /* Warm, Comforting Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-companionship: linear-gradient(180deg, hsl(45 35% 95%), hsl(25 35% 92%));
     --gradient-warmth: linear-gradient(45deg, hsl(var(--accent)), hsl(var(--secondary)));
-    --gradient-rainbow: linear-gradient(90deg, hsl(0 85% 65%), hsl(60 85% 65%), hsl(120 85% 65%), hsl(180 85% 65%), hsl(240 85% 65%), hsl(300 85% 65%));
-    --gradient-fun: linear-gradient(135deg, hsl(330 85% 70%), hsl(270 85% 60%), hsl(180 70% 50%));
 
-    /* Vibrant Shadows */
-    --shadow-gentle: 0 6px 25px -6px hsl(var(--primary) / 0.3);
-    --shadow-companionship: 0 10px 35px -10px hsl(var(--primary) / 0.4);
-    --shadow-colorful: 0 8px 30px -8px hsl(var(--accent) / 0.4);
+    /* Comforting Shadows - More defined for better visibility */
+    --shadow-gentle: 0 6px 25px -6px hsl(var(--primary) / 0.25);
+    --shadow-companionship: 0 10px 35px -10px hsl(var(--primary) / 0.3);
 
     /* Gentle, Reassuring Animations */
     --transition-companionship: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
