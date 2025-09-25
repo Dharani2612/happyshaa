@@ -17,7 +17,7 @@ export const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      text: "Hello there, dear friend! I'm so glad you're here. My name is Companion, and I'm here to chat with you and keep you company. How are you feeling today? I'd love to hear from you.",
+      text: "Hey there! 👋 I'm Shalala, your AI companion! I'm super excited to chat with you today. Think of me as your digital friend who's always here to listen, laugh, and help you through anything. What's going on in your world today? I'm all ears! 😊",
       sender: "bot",
       timestamp: new Date(),
       mood: "supportive"

@@ -8,56 +8,56 @@ All colors MUST be HSL. High contrast for better visibility.
 
 @layer base {
   :root {
-    /* Warm, High-Contrast Background Palette */
-    --background: 45 25% 96%;
-    --foreground: 210 15% 15%;
+    /* Subtle Background Palette */
+    --background: 220 15% 97%;
+    --foreground: 215 16% 47%;
 
-    /* Card & Surface Colors - Warmer tones */
+    /* Card & Surface Colors - Subtle tones */
     --card: 0 0% 100%;
-    --card-foreground: 210 15% 15%;
+    --card-foreground: 215 16% 47%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 15% 15%;
+    --popover-foreground: 215 16% 47%;
 
-    /* Companionship Primary - Warm, Trustworthy Blue */
-    --primary: 210 75% 45%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 210 75% 65%;
+    /* Shalala Primary - Subtle Lavender */
+    --primary: 250 50% 75%;
+    --primary-foreground: 250 20% 20%;
+    --primary-glow: 250 40% 85%;
 
-    /* Nurturing Secondary - Warm Sage */
-    --secondary: 140 25% 75%;
-    --secondary-foreground: 140 30% 20%;
+    /* Subtle Secondary - Soft Mint */
+    --secondary: 160 30% 85%;
+    --secondary-foreground: 160 25% 30%;
 
-    /* Gentle Muted Tones - Higher contrast */
-    --muted: 45 15% 88%;
-    --muted-foreground: 210 15% 35%;
+    /* Gentle Muted Tones */
+    --muted: 220 15% 93%;
+    --muted-foreground: 215 16% 60%;
 
-    /* Comforting Accent - Soft Peach */
-    --accent: 25 45% 80%;
-    --accent-foreground: 25 35% 25%;
+    /* Soft Accent - Gentle Rose */
+    --accent: 340 30% 90%;
+    --accent-foreground: 340 35% 35%;
 
-    /* Gentle Warning - Soft Coral */
-    --destructive: 15 65% 55%;
+    /* Soft Warning - Muted Coral */
+    --destructive: 10 40% 70%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Clear, Defined Borders & Inputs */
-    --border: 210 15% 80%;
-    --input: 210 15% 92%;
-    --ring: 210 75% 45%;
+    /* Subtle Borders & Inputs */
+    --border: 220 15% 88%;
+    --input: 220 15% 95%;
+    --ring: 250 50% 75%;
 
     /* Enhanced Radius for Soft Feel */
     --radius: 0.75rem;
 
-    /* Warm, Comforting Gradients */
+    /* Subtle, Peaceful Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-companionship: linear-gradient(180deg, hsl(45 35% 95%), hsl(25 35% 92%));
+    --gradient-companionship: linear-gradient(180deg, hsl(220 15% 97%), hsl(250 20% 95%));
     --gradient-warmth: linear-gradient(45deg, hsl(var(--accent)), hsl(var(--secondary)));
 
-    /* Comforting Shadows - More defined for better visibility */
-    --shadow-gentle: 0 6px 25px -6px hsl(var(--primary) / 0.25);
-    --shadow-companionship: 0 10px 35px -10px hsl(var(--primary) / 0.3);
+    /* Soft, Gentle Shadows */
+    --shadow-gentle: 0 4px 20px -6px hsl(var(--primary) / 0.15);
+    --shadow-companionship: 0 8px 30px -10px hsl(var(--primary) / 0.2);
 
-    /* Gentle, Reassuring Animations */
+    /* Smooth, Peaceful Animations */
     --transition-companionship: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     --transition-gentle: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 

@@ -1,18 +1,17 @@
 import { useState } from "react";
-import { MessageCircle, Heart, BarChart3, Book, Users, Smile, Phone, Gamepad2, Music2, Palette, BookOpen } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { MessageCircle, Heart, BarChart3, Book, Users, Smile, Phone, Gamepad2, Palette, BookOpen, Music, Calendar, PhoneIcon } from "lucide-react";
 import { ChatInterface } from "@/components/ChatInterface";
 import { MoodJournal } from "@/components/MoodJournal";
 import { Dashboard } from "@/components/Dashboard";
 import { CBTExercises } from "@/components/CBTExercises";
-import Games from "@/components/Games";
-import MusicPlayer from "@/components/Music";
+import EnhancedGames from "@/components/EnhancedGames";
+import Spotify from "@/components/Spotify";
 import Doodle from "@/components/Doodle";
-import Journal from "@/components/Journal";
-import heroImage from "@/assets/hero-wellness.jpg";
+import PinterestJournal from "@/components/PinterestJournal";
+import NotePad from "@/components/NotePad";
+import Contacts from "@/components/Contacts";
 
-type ActiveView = "chat" | "mood" | "dashboard" | "exercises" | "games" | "music" | "doodle" | "journal";
+type ActiveView = "chat" | "mood" | "dashboard" | "exercises" | "games" | "music" | "doodle" | "journal" | "notepad" | "contacts";
 
 const Index = () => {
   const [activeView, setActiveView] = useState<ActiveView>("chat");
@@ -51,7 +50,7 @@ const Index = () => {
                 <Heart className="w-6 h-6 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-elder-2xl font-bold text-foreground">Companion</h1>
+                <h1 className="text-elder-2xl font-bold text-foreground">Shalala</h1>
                 <p className="text-elder-base text-muted-foreground">Your caring companion, always here for you</p>
               </div>
             </div>
@@ -159,7 +158,7 @@ const Index = () => {
       <footer className="bg-card/80 border-t border-border shadow-gentle mt-16">
         <div className="container mx-auto px-6 py-8 text-center">
           <p className="text-elder-lg text-muted-foreground font-semibold">
-            Companion - You always have a friend here
+            Shalala - You always have a friend here
           </p>
           <p className="text-elder-base text-muted-foreground mt-3">
             This app provides friendly conversation and emotional support. For mental health emergencies, please call 988 or your local crisis line.
