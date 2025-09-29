@@ -125,6 +125,22 @@ const Index = () => {
                 <Users className="w-4 h-4" />
                 <span className="hidden sm:inline ml-1">Activities</span>
               </Button>
+              <Button
+                variant={activeView === "notepad" ? "companionship" : "nurturing"}
+                size="sm"
+                onClick={() => setActiveView("notepad")}
+              >
+                <Calendar className="w-4 h-4" />
+                <span className="hidden sm:inline ml-1">Schedule</span>
+              </Button>
+              <Button
+                variant={activeView === "contacts" ? "companionship" : "nurturing"}
+                size="sm"
+                onClick={() => setActiveView("contacts")}
+              >
+                <PhoneIcon className="w-4 h-4" />
+                <span className="hidden sm:inline ml-1">Contacts</span>
+              </Button>
             </div>
           </div>
         </div>
