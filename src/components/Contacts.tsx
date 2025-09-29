@@ -79,7 +79,10 @@ const Contacts = () => {
     setContacts(prev => [...prev, contact]);
     setNewContact({ name: "", phone: "", relationship: "", emergency: false });
     setShowAddForm(false);
-    toast(`📞 Added ${contact.name} to your contacts!`);
+    toast(`📞 Added ${contact.name} to your contacts! Calling now...`);
+
+    // Immediately initiate a call after adding the contact
+    handleCall(contact);
   };
 
   const handleCall = (contact: Contact) => {

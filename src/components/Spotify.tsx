@@ -51,6 +51,13 @@ const Spotify = () => {
   const [currentPlaying, setCurrentPlaying] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  // Helpers to detect and embed Spotify tracks
+  const isTrackUrl = (url: string) => /open\.spotify\.com\/track\//.test(url);
+  const getEmbedUrl = (url: string) => {
+    const match = url.match(/open\.spotify\.com\/track\/([a-zA-Z0-9]+)/);
+    return match ? `https://open.spotify.com/embed/track/${match[1]}` : null;
+  };
+
   const handleAddSong = () => {
     if (!newSong.name || !newSong.artist) {
       toast("Please fill in song name and artist");
@@ -80,7 +87,12 @@ const Spotify = () => {
     
     const song = playlist.find(s => s.id === songId);
     if (song) {
-      toast(`${isPlaying ? "Paused" : "Playing"} "${song.name}"`);
+      const nowPlaying = currentPlaying === songId ? !isPlaying : true;
+      toast(`${nowPlaying ? "Playing" : "Paused"} "${song.name}"`);
+      // If this isn't a direct track URL, open in Spotify so playback works reliably
+      if (!isTrackUrl(song.spotifyUrl) && nowPlaying) {
+        openSpotify(song.spotifyUrl);
+      }
     }
   };
 
@@ -224,43 +236,63 @@ const Spotify = () => {
 
       {/* Player Controls */}
       {currentPlaying && (
-        <Card className="p-4 shadow-gentle bg-gradient-primary">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-lg bg-primary-foreground/20 flex items-center justify-center">
-                <Music className="w-6 h-6 text-primary-foreground" />
+        <div className="space-y-3">
+          <Card className="p-4 shadow-gentle bg-gradient-primary">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-lg bg-primary-foreground/20 flex items-center justify-center">
+                  <Music className="w-6 h-6 text-primary-foreground" />
+                </div>
+                <div>
+                  <p className="text-elder-base font-medium text-primary-foreground">
+                    {playlist.find(s => s.id === currentPlaying)?.name}
+                  </p>
+                  <p className="text-elder-sm text-primary-foreground/80">
+                    {playlist.find(s => s.id === currentPlaying)?.artist}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-elder-base font-medium text-primary-foreground">
-                  {playlist.find(s => s.id === currentPlaying)?.name}
-                </p>
-                <p className="text-elder-sm text-primary-foreground/80">
-                  {playlist.find(s => s.id === currentPlaying)?.artist}
-                </p>
+              
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="sm" className="text-primary-foreground">
+                  <SkipBack className="w-4 h-4" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => handlePlayPause(currentPlaying)}
+                  className="text-primary-foreground"
+                >
+                  {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                </Button>
+                <Button variant="ghost" size="sm" className="text-primary-foreground">
+                  <SkipForward className="w-4 h-4" />
+                </Button>
+                <Button variant="ghost" size="sm" className="text-primary-foreground">
+                  <Volume2 className="w-4 h-4" />
+                </Button>
               </div>
             </div>
-            
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" className="text-primary-foreground">
-                <SkipBack className="w-4 h-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => handlePlayPause(currentPlaying)}
-                className="text-primary-foreground"
-              >
-                {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-              </Button>
-              <Button variant="ghost" size="sm" className="text-primary-foreground">
-                <SkipForward className="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="sm" className="text-primary-foreground">
-                <Volume2 className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        </Card>
+          </Card>
+
+          {(() => {
+            const song = playlist.find(s => s.id === currentPlaying);
+            const embedUrl = song ? getEmbedUrl(song.spotifyUrl) : null;
+            return embedUrl ? (
+              <Card className="p-0 overflow-hidden">
+                <iframe
+                  title="Spotify Player"
+                  src={embedUrl}
+                  width="100%"
+                  height="152"
+                  frameBorder="0"
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                  loading="lazy"
+                />
+              </Card>
+            ) : null;
+          })()}
+        </div>
       )}
 
       {/* Spotify Integration Info */}
