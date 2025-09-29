@@ -19,22 +19,22 @@ All colors MUST be HSL. High contrast for better visibility.
     --popover: 0 0% 100%;
     --popover-foreground: 215 16% 47%;
 
-    /* Shalala Primary - Subtle Lavender */
-    --primary: 250 50% 75%;
-    --primary-foreground: 250 20% 20%;
-    --primary-glow: 250 40% 85%;
+    /* Shalala Primary - Subtle Purple */
+    --primary: 270 40% 65%;
+    --primary-foreground: 270 15% 15%;
+    --primary-glow: 270 35% 80%;
 
-    /* Subtle Secondary - Soft Mint */
-    --secondary: 160 30% 85%;
-    --secondary-foreground: 160 25% 30%;
+    /* Subtle Secondary - Soft Lavender */
+    --secondary: 260 25% 85%;
+    --secondary-foreground: 260 30% 25%;
 
     /* Gentle Muted Tones */
-    --muted: 220 15% 93%;
-    --muted-foreground: 215 16% 60%;
+    --muted: 270 10% 93%;
+    --muted-foreground: 270 8% 60%;
 
-    /* Soft Accent - Gentle Rose */
-    --accent: 340 30% 90%;
-    --accent-foreground: 340 35% 35%;
+    /* Soft Accent - Gentle Violet */
+    --accent: 280 35% 88%;
+    --accent-foreground: 280 40% 30%;
 
     /* Soft Warning - Muted Coral */
     --destructive: 10 40% 70%;
@@ -50,7 +50,7 @@ All colors MUST be HSL. High contrast for better visibility.
 
     /* Subtle, Peaceful Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-companionship: linear-gradient(180deg, hsl(220 15% 97%), hsl(250 20% 95%));
+    --gradient-companionship: linear-gradient(180deg, hsl(270 15% 97%), hsl(270 20% 95%));
     --gradient-warmth: linear-gradient(45deg, hsl(var(--accent)), hsl(var(--secondary)));
 
     /* Soft, Gentle Shadows */
@@ -89,14 +89,14 @@ All colors MUST be HSL. High contrast for better visibility.
     --popover: 210 15% 16%;
     --popover-foreground: 45 25% 92%;
 
-    /* Dark Mode Primary - Warm, Trustworthy */
-    --primary: 210 65% 65%;
-    --primary-foreground: 210 15% 12%;
-    --primary-glow: 210 65% 75%;
+    /* Dark Mode Primary - Deep Purple */
+    --primary: 270 45% 55%;
+    --primary-foreground: 270 15% 12%;
+    --primary-glow: 270 40% 70%;
 
-    /* Dark Mode Secondary - Gentle Green */
-    --secondary: 140 20% 25%;
-    --secondary-foreground: 140 25% 80%;
+    /* Dark Mode Secondary - Soft Lavender */
+    --secondary: 260 20% 25%;
+    --secondary-foreground: 260 25% 80%;
 
     --muted: 210 12% 20%;
     --muted-foreground: 210 15% 70%;
