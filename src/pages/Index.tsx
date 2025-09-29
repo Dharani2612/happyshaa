@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { MessageCircle, Heart, BarChart3, Book, Users, Smile, Phone, Gamepad2, Palette, BookOpen, Music, Calendar, PhoneIcon } from "lucide-react";
+import { MessageCircle, Heart, BarChart3, Book, Users, Smile, Phone, Gamepad2, Palette, BookOpen, Music2, Calendar, PhoneIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import heroImage from "@/assets/hero-wellness.jpg";
 import { ChatInterface } from "@/components/ChatInterface";
 import { MoodJournal } from "@/components/MoodJournal";
 import { Dashboard } from "@/components/Dashboard";
@@ -27,13 +29,17 @@ const Index = () => {
       case "exercises":
         return <CBTExercises />;
       case "games":
-        return <Games />;
+        return <EnhancedGames />;
       case "music":
-        return <MusicPlayer />;
+        return <Spotify />;
       case "doodle":
         return <Doodle />;
       case "journal":
-        return <Journal />;
+        return <PinterestJournal />;
+      case "notepad":
+        return <NotePad />;
+      case "contacts":
+        return <Contacts />;
       default:
         return <ChatInterface />;
     }

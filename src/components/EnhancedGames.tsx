@@ -266,7 +266,7 @@ const NumberSequenceGame = () => {
     let newSequence;
     
     if (pattern === patterns[2]) {
-      newSequence = pattern();
+      newSequence = pattern(1, 1); // Fibonacci needs start values
     } else if (pattern === patterns[1]) {
       newSequence = pattern(2, 2); // Start with 2, multiply by 2
     } else {
