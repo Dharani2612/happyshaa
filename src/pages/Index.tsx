@@ -1,39 +1,73 @@
-import { useState } from "react";
-import { MessageCircle, Heart, BarChart3, Book, Users, Smile, Phone, Gamepad2, Palette, BookOpen, Music2, Calendar, PhoneIcon } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { MessageCircle, Heart, BarChart3, Book, Users, Smile, Phone, Gamepad2, Palette, BookOpen, Music2, Calendar, PhoneIcon, Settings as SettingsIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/hero-wellness.jpg";
-import { ChatInterface } from "@/components/ChatInterface";
+import { EnhancedChatInterface } from "@/components/EnhancedChatInterface";
 import { MoodJournal } from "@/components/MoodJournal";
 import { Dashboard } from "@/components/Dashboard";
+import Settings from "@/components/Settings";
 import { CBTExercises } from "@/components/CBTExercises";
-import EnhancedGames from "@/components/EnhancedGames";
-import Spotify from "@/components/Spotify";
-import Doodle from "@/components/Doodle";
+import InterestingGames from "@/components/InterestingGames";
+import MusicWithSpotify from "@/components/MusicWithSpotify";
+import FixedDoodle from "@/components/FixedDoodle";
 import PinterestJournal from "@/components/PinterestJournal";
 import NotePad from "@/components/NotePad";
 import Contacts from "@/components/Contacts";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
-type ActiveView = "chat" | "mood" | "dashboard" | "exercises" | "games" | "music" | "doodle" | "journal" | "notepad" | "contacts";
+type ActiveView = "chat" | "mood" | "dashboard" | "exercises" | "games" | "music" | "doodle" | "journal" | "notepad" | "contacts" | "settings";
 
 const Index = () => {
+  const navigate = useNavigate();
   const [activeView, setActiveView] = useState<ActiveView>("chat");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/auth');
+      }
+    } catch (error) {
+      console.error('Auth check error:', error);
+      navigate('/auth');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-companionship flex items-center justify-center">
+        <p className="text-foreground text-lg">Loading...</p>
+      </div>
+    );
+  }
 
   const renderContent = () => {
     switch (activeView) {
       case "chat":
-        return <ChatInterface />;
+        return <EnhancedChatInterface />;
       case "mood":
         return <MoodJournal />;
       case "dashboard":
         return <Dashboard />;
+      case "settings":
+        return <Settings />;
       case "exercises":
         return <CBTExercises />;
       case "games":
-        return <EnhancedGames />;
+        return <InterestingGames />;
       case "music":
-        return <Spotify />;
+        return <MusicWithSpotify />;
       case "doodle":
-        return <Doodle />;
+        return <FixedDoodle />;
       case "journal":
         return <PinterestJournal />;
       case "notepad":
@@ -41,7 +75,7 @@ const Index = () => {
       case "contacts":
         return <Contacts />;
       default:
-        return <ChatInterface />;
+        return <EnhancedChatInterface />;
     }
   };
 
@@ -140,6 +174,14 @@ const Index = () => {
               >
                 <PhoneIcon className="w-4 h-4" />
                 <span className="hidden sm:inline ml-1">Contacts</span>
+              </Button>
+              <Button
+                variant={activeView === "settings" ? "companionship" : "nurturing"}
+                size="sm"
+                onClick={() => setActiveView("settings")}
+              >
+                <SettingsIcon className="w-4 h-4" />
+                <span className="hidden sm:inline ml-1">Settings</span>
               </Button>
             </div>
           </div>

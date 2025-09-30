@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,11 +9,11 @@ import {
   UserPlus, 
   Heart, 
   Search,
-  Edit,
   Trash2,
   PhoneCall
 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Contact {
   id: string;
@@ -25,33 +25,8 @@ interface Contact {
 }
 
 const Contacts = () => {
-  const [contacts, setContacts] = useState<Contact[]>([
-    {
-      id: "1",
-      name: "Dr. Sarah Johnson",
-      phone: "+1 (555) 123-4567",
-      relationship: "Doctor",
-      emergency: true,
-      addedAt: new Date()
-    },
-    {
-      id: "2", 
-      name: "Emma Wilson",
-      phone: "+1 (555) 987-6543",
-      relationship: "Daughter",
-      emergency: false,
-      addedAt: new Date()
-    },
-    {
-      id: "3",
-      name: "Emergency Services",
-      phone: "911",
-      relationship: "Emergency",
-      emergency: true,
-      addedAt: new Date()
-    }
-  ]);
-  
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [newContact, setNewContact] = useState({ 
     name: "", 
@@ -61,47 +36,117 @@ const Contacts = () => {
   });
   const [showAddForm, setShowAddForm] = useState(false);
 
-  const handleAddContact = () => {
+  useEffect(() => {
+    loadContacts();
+  }, []);
+
+  const loadContacts = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('contacts')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const formattedContacts: Contact[] = data.map(c => ({
+        id: c.id,
+        name: c.name,
+        phone: c.phone,
+        relationship: c.relationship || '',
+        emergency: c.emergency_contact || false,
+        addedAt: new Date(c.created_at!)
+      }));
+
+      setContacts(formattedContacts);
+    } catch (error) {
+      console.error('Error loading contacts:', error);
+      toast.error('Failed to load contacts');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddContact = async () => {
     if (!newContact.name || !newContact.phone) {
-      toast("Please fill in name and phone number");
+      toast.error("Please fill in name and phone number");
       return;
     }
 
-    const contact: Contact = {
-      id: Date.now().toString(),
-      name: newContact.name,
-      phone: newContact.phone,
-      relationship: newContact.relationship || "Contact",
-      emergency: newContact.emergency,
-      addedAt: new Date()
-    };
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Please log in to add contacts');
+        return;
+      }
 
-    setContacts(prev => [...prev, contact]);
-    setNewContact({ name: "", phone: "", relationship: "", emergency: false });
-    setShowAddForm(false);
-    toast(`📞 Added ${contact.name} to your contacts! Calling now...`);
+      const { data, error } = await supabase
+        .from('contacts')
+        .insert({
+          user_id: user.id,
+          name: newContact.name,
+          phone: newContact.phone,
+          relationship: newContact.relationship || "Contact",
+          emergency_contact: newContact.emergency
+        })
+        .select()
+        .single();
 
-    // Immediately initiate a call after adding the contact
-    handleCall(contact);
+      if (error) throw error;
+
+      const contact: Contact = {
+        id: data.id,
+        name: data.name,
+        phone: data.phone,
+        relationship: data.relationship || '',
+        emergency: data.emergency_contact || false,
+        addedAt: new Date(data.created_at!)
+      };
+
+      setContacts(prev => [contact, ...prev]);
+      setNewContact({ name: "", phone: "", relationship: "", emergency: false });
+      setShowAddForm(false);
+      toast.success(`📞 Added ${contact.name} to your contacts!`);
+    } catch (error) {
+      console.error('Error adding contact:', error);
+      toast.error('Failed to add contact');
+    }
   };
 
   const handleCall = (contact: Contact) => {
-    // In a real app, this would integrate with the device's phone
     const phoneNumber = contact.phone.replace(/[^\d+]/g, '');
     
     if (navigator.userAgent.includes('Mobile')) {
-      // On mobile, try to open the phone app
       window.location.href = `tel:${phoneNumber}`;
     } else {
-      // On desktop, show the number
       toast(`📞 Call ${contact.name} at ${contact.phone}`);
     }
   };
 
-  const handleDelete = (contactId: string) => {
+  const handleDelete = async (contactId: string) => {
     const contact = contacts.find(c => c.id === contactId);
-    setContacts(prev => prev.filter(c => c.id !== contactId));
-    toast(`Removed ${contact?.name} from contacts`);
+    
+    try {
+      const { error } = await supabase
+        .from('contacts')
+        .delete()
+        .eq('id', contactId);
+
+      if (error) throw error;
+
+      setContacts(prev => prev.filter(c => c.id !== contactId));
+      toast.success(`Removed ${contact?.name} from contacts`);
+    } catch (error) {
+      console.error('Error deleting contact:', error);
+      toast.error('Failed to delete contact');
+    }
   };
 
   const filteredContacts = contacts.filter(contact =>
@@ -113,19 +158,26 @@ const Contacts = () => {
   const emergencyContacts = filteredContacts.filter(c => c.emergency);
   const regularContacts = filteredContacts.filter(c => !c.emergency);
 
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-muted-foreground">Loading contacts...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-elder-3xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
+        <h2 className="text-3xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
           <Phone className="w-8 h-8 text-primary" />
           Personal Contacts
         </h2>
-        <p className="text-elder-lg text-muted-foreground">
+        <p className="text-lg text-muted-foreground">
           Keep your important contacts close and make calls easily
         </p>
       </div>
 
-      {/* Quick Actions */}
       <div className="grid md:grid-cols-2 gap-4">
         <Button
           onClick={() => setShowAddForm(!showAddForm)}
@@ -147,10 +199,9 @@ const Contacts = () => {
         </Button>
       </div>
 
-      {/* Add Contact Form */}
       {showAddForm && (
         <Card className="p-6 shadow-gentle">
-          <h3 className="text-elder-xl font-semibold text-foreground mb-4 flex items-center gap-2">
+          <h3 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
             <UserPlus className="w-5 h-5 text-primary" />
             Add New Contact
           </h3>
@@ -159,19 +210,16 @@ const Contacts = () => {
               placeholder="Full name"
               value={newContact.name}
               onChange={(e) => setNewContact(prev => ({ ...prev, name: e.target.value }))}
-              className="text-elder-base"
             />
             <Input
               placeholder="Phone number"
               value={newContact.phone}
               onChange={(e) => setNewContact(prev => ({ ...prev, phone: e.target.value }))}
-              className="text-elder-base"
             />
             <Input
               placeholder="Relationship (e.g., Son, Doctor)"
               value={newContact.relationship}
               onChange={(e) => setNewContact(prev => ({ ...prev, relationship: e.target.value }))}
-              className="text-elder-base"
             />
             <div className="flex items-center gap-2">
               <input
@@ -181,7 +229,7 @@ const Contacts = () => {
                 onChange={(e) => setNewContact(prev => ({ ...prev, emergency: e.target.checked }))}
                 className="w-4 h-4"
               />
-              <label htmlFor="emergency" className="text-elder-base text-foreground">
+              <label htmlFor="emergency" className="text-foreground">
                 Emergency Contact
               </label>
             </div>
@@ -191,17 +239,13 @@ const Contacts = () => {
               <Plus className="w-4 h-4 mr-2" />
               Add Contact
             </Button>
-            <Button 
-              onClick={() => setShowAddForm(false)} 
-              variant="outline"
-            >
+            <Button onClick={() => setShowAddForm(false)} variant="outline">
               Cancel
             </Button>
           </div>
         </Card>
       )}
 
-      {/* Search */}
       <Card className="p-4 shadow-gentle">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
@@ -209,15 +253,14 @@ const Contacts = () => {
             placeholder="Search contacts..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 text-elder-base"
+            className="pl-10"
           />
         </div>
       </Card>
 
-      {/* Emergency Contacts */}
       {emergencyContacts.length > 0 && (
         <Card className="p-6 shadow-gentle border-destructive/20">
-          <h3 className="text-elder-xl font-semibold text-foreground mb-4 flex items-center gap-2">
+          <h3 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
             <Heart className="w-5 h-5 text-destructive" />
             Emergency Contacts
           </h3>
@@ -233,10 +276,8 @@ const Contacts = () => {
                   </div>
                   
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-elder-base font-medium text-foreground">
-                      {contact.name}
-                    </h4>
-                    <p className="text-elder-sm text-muted-foreground">
+                    <h4 className="font-medium text-foreground">{contact.name}</h4>
+                    <p className="text-sm text-muted-foreground">
                       {contact.relationship} • {contact.phone}
                     </p>
                   </div>
@@ -245,23 +286,13 @@ const Contacts = () => {
                 </div>
                 
                 <div className="flex gap-2">
-                  <Button
-                    onClick={() => handleCall(contact)}
-                    variant="destructive"
-                    size="sm"
-                  >
+                  <Button onClick={() => handleCall(contact)} variant="destructive" size="sm">
                     <PhoneCall className="w-4 h-4 mr-1" />
                     Call
                   </Button>
-                  {contact.phone !== "911" && (
-                    <Button
-                      onClick={() => handleDelete(contact.id)}
-                      variant="ghost"
-                      size="sm"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  )}
+                  <Button onClick={() => handleDelete(contact.id)} variant="ghost" size="sm">
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
             ))}
@@ -269,9 +300,8 @@ const Contacts = () => {
         </Card>
       )}
 
-      {/* Regular Contacts */}
       <Card className="p-6 shadow-gentle">
-        <h3 className="text-elder-xl font-semibold text-foreground mb-4 flex items-center gap-2">
+        <h3 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
           <UserPlus className="w-5 h-5 text-primary" />
           Your Contacts ({regularContacts.length})
         </h3>
@@ -279,10 +309,10 @@ const Contacts = () => {
         {regularContacts.length === 0 ? (
           <div className="text-center py-8">
             <Phone className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <p className="text-elder-lg text-muted-foreground">
+            <p className="text-lg text-muted-foreground">
               {searchQuery ? "No contacts match your search" : "No contacts yet"}
             </p>
-            <p className="text-elder-base text-muted-foreground mt-2">
+            <p className="text-muted-foreground mt-2">
               Add some contacts to get started!
             </p>
           </div>
@@ -299,29 +329,19 @@ const Contacts = () => {
                   </div>
                   
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-elder-base font-medium text-foreground">
-                      {contact.name}
-                    </h4>
-                    <p className="text-elder-sm text-muted-foreground">
+                    <h4 className="font-medium text-foreground">{contact.name}</h4>
+                    <p className="text-sm text-muted-foreground">
                       {contact.relationship} • {contact.phone}
                     </p>
                   </div>
                 </div>
                 
                 <div className="flex gap-2">
-                  <Button
-                    onClick={() => handleCall(contact)}
-                    variant="companionship"
-                    size="sm"
-                  >
+                  <Button onClick={() => handleCall(contact)} variant="companionship" size="sm">
                     <PhoneCall className="w-4 h-4 mr-1" />
                     Call
                   </Button>
-                  <Button
-                    onClick={() => handleDelete(contact.id)}
-                    variant="ghost"
-                    size="sm"
-                  >
+                  <Button onClick={() => handleDelete(contact.id)} variant="ghost" size="sm">
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
@@ -331,10 +351,9 @@ const Contacts = () => {
         )}
       </Card>
 
-      {/* Help Info */}
       <Card className="p-4 shadow-gentle bg-muted/30">
-        <h3 className="text-elder-lg font-semibold text-foreground mb-2">How to make calls</h3>
-        <div className="text-elder-base text-muted-foreground space-y-2">
+        <h3 className="text-lg font-semibold text-foreground mb-2">How to make calls</h3>
+        <div className="text-muted-foreground space-y-2">
           <p>• On mobile devices, clicking "Call" will open your phone app</p>
           <p>• On desktop, the phone number will be displayed for you to dial</p>
           <p>• Emergency contacts are highlighted in red for quick access</p>
