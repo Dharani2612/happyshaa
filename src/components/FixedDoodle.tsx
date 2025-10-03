@@ -12,7 +12,8 @@ const FixedDoodle = () => {
   const [activeColor, setActiveColor] = useState("#8b5cf6");
   const [brushSize, setBrushSize] = useState(5);
   const [isEraser, setIsEraser] = useState(false);
-  const [activeTool, setActiveTool] = useState<"draw" | "circle" | "square" | "triangle">("draw");
+  const [activeTool, setActiveTool] = useState<"draw" | "circle" | "square" | "triangle" | "line" | "text">("draw");
+  const [textInput, setTextInput] = useState("");
 
   const colors = [
     "#8b5cf6", "#ec4899", "#3b82f6", "#10b981", 
