@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { Canvas as FabricCanvas, PencilBrush } from "fabric";
+import { Canvas as FabricCanvas, PencilBrush, Circle, Rect, Triangle } from "fabric";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Palette, Eraser, Download, Trash2, Undo } from "lucide-react";
+import { Palette, Eraser, Download, Trash2, Undo, Circle as CircleIcon, Square, Triangle as TriangleIcon, Pencil } from "lucide-react";
 import { toast } from "sonner";
 
 const FixedDoodle = () => {
@@ -12,17 +12,19 @@ const FixedDoodle = () => {
   const [activeColor, setActiveColor] = useState("#8b5cf6");
   const [brushSize, setBrushSize] = useState(5);
   const [isEraser, setIsEraser] = useState(false);
+  const [activeTool, setActiveTool] = useState<"draw" | "circle" | "square" | "triangle">("draw");
 
   const colors = [
     "#8b5cf6", "#ec4899", "#3b82f6", "#10b981", 
-    "#f59e0b", "#ef4444", "#6366f1", "#14b8a6"
+    "#f59e0b", "#ef4444", "#6366f1", "#14b8a6",
+    "#f97316", "#a855f7", "#06b6d4", "#84cc16"
   ];
 
   useEffect(() => {
     if (!canvasRef.current) return;
 
     const canvas = new FabricCanvas(canvasRef.current, {
-      width: 800,
+      width: window.innerWidth > 900 ? 900 : window.innerWidth - 48,
       height: 600,
       backgroundColor: "#ffffff",
       isDrawingMode: true,
@@ -33,7 +35,7 @@ const FixedDoodle = () => {
     canvas.freeDrawingBrush.width = brushSize;
 
     setFabricCanvas(canvas);
-    toast.success("Canvas ready! Start drawing! 🎨");
+    toast.success("Canvas ready! Start creating! 🎨");
 
     return () => {
       canvas.dispose();
@@ -87,6 +89,58 @@ const FixedDoodle = () => {
     toast.success("Artwork downloaded! 🎨");
   };
 
+  const handleToolChange = (tool: "draw" | "circle" | "square" | "triangle") => {
+    if (!fabricCanvas) return;
+    
+    setActiveTool(tool);
+    setIsEraser(false);
+    
+    if (tool === "draw") {
+      fabricCanvas.isDrawingMode = true;
+    } else {
+      fabricCanvas.isDrawingMode = false;
+      
+      let shape;
+      if (tool === "circle") {
+        shape = new Circle({
+          left: 100,
+          top: 100,
+          radius: 50,
+          fill: activeColor,
+          stroke: activeColor,
+          strokeWidth: 2,
+        });
+      } else if (tool === "square") {
+        shape = new Rect({
+          left: 100,
+          top: 100,
+          width: 100,
+          height: 100,
+          fill: activeColor,
+          stroke: activeColor,
+          strokeWidth: 2,
+        });
+      } else if (tool === "triangle") {
+        shape = new Triangle({
+          left: 100,
+          top: 100,
+          width: 100,
+          height: 100,
+          fill: activeColor,
+          stroke: activeColor,
+          strokeWidth: 2,
+        });
+      }
+      
+      if (shape) {
+        fabricCanvas.add(shape);
+        fabricCanvas.setActiveObject(shape);
+        fabricCanvas.renderAll();
+        toast.success(`${tool} added! 🎨`);
+      }
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <div className="text-center">
@@ -102,14 +156,49 @@ const FixedDoodle = () => {
       <Card className="p-6 shadow-companionship">
         {/* Toolbar */}
         <div className="flex flex-wrap gap-4 items-center mb-6">
+          {/* Drawing Tools */}
+          <div className="flex gap-2 border-r border-border pr-4">
+            <Button
+              onClick={() => handleToolChange("draw")}
+              variant={activeTool === "draw" && !isEraser ? "default" : "outline"}
+              size="sm"
+            >
+              <Pencil className="w-4 h-4" />
+            </Button>
+            <Button
+              onClick={() => handleToolChange("circle")}
+              variant={activeTool === "circle" ? "default" : "outline"}
+              size="sm"
+            >
+              <CircleIcon className="w-4 h-4" />
+            </Button>
+            <Button
+              onClick={() => handleToolChange("square")}
+              variant={activeTool === "square" ? "default" : "outline"}
+              size="sm"
+            >
+              <Square className="w-4 h-4" />
+            </Button>
+            <Button
+              onClick={() => handleToolChange("triangle")}
+              variant={activeTool === "triangle" ? "default" : "outline"}
+              size="sm"
+            >
+              <TriangleIcon className="w-4 h-4" />
+            </Button>
+          </div>
+
           {/* Color Palette */}
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {colors.map((color) => (
               <button
                 key={color}
                 onClick={() => {
                   setActiveColor(color);
                   setIsEraser(false);
+                  if (fabricCanvas?.freeDrawingBrush) {
+                    fabricCanvas.freeDrawingBrush.color = color;
+                  }
                 }}
                 className={`w-10 h-10 rounded-full border-2 transition-all ${
                   activeColor === color && !isEraser
@@ -123,8 +212,12 @@ const FixedDoodle = () => {
 
           {/* Eraser */}
           <Button
-            onClick={() => setIsEraser(!isEraser)}
-            variant={isEraser ? "companionship" : "outline"}
+            onClick={() => {
+              setIsEraser(!isEraser);
+              setActiveTool("draw");
+              if (fabricCanvas) fabricCanvas.isDrawingMode = true;
+            }}
+            variant={isEraser ? "default" : "outline"}
             size="sm"
           >
             <Eraser className="w-4 h-4" />
@@ -155,9 +248,9 @@ const FixedDoodle = () => {
               <Trash2 className="w-4 h-4 mr-1" />
               Clear
             </Button>
-            <Button onClick={handleDownload} variant="companionship" size="sm">
+            <Button onClick={handleDownload} variant="default" size="sm">
               <Download className="w-4 h-4 mr-1" />
-              Download
+              Save Art
             </Button>
           </div>
         </div>
@@ -169,13 +262,17 @@ const FixedDoodle = () => {
       </Card>
 
       {/* Tips */}
-      <Card className="p-6 shadow-gentle bg-muted/30">
-        <h3 className="text-lg font-semibold text-foreground mb-3">🎨 Painting Tips</h3>
+      <Card className="p-6 shadow-gentle bg-gradient-to-br from-primary/5 to-accent/5">
+        <h3 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+          <Palette className="w-5 h-5 text-primary" />
+          Creative Tips
+        </h3>
         <ul className="space-y-2 text-muted-foreground">
-          <li>• Use different colors to express your emotions</li>
-          <li>• Try different brush sizes for various effects</li>
-          <li>• The eraser tool helps you refine your artwork</li>
-          <li>• Don't worry about perfection - just enjoy creating!</li>
+          <li>• <strong>Draw Mode:</strong> Freehand drawing with adjustable brush size</li>
+          <li>• <strong>Shapes:</strong> Add circles, squares, and triangles to your art</li>
+          <li>• <strong>Colors:</strong> Express emotions with our vibrant color palette</li>
+          <li>• <strong>Layers:</strong> Shapes can be moved and layered on top of each other</li>
+          <li>• <strong>Experiment:</strong> Don't worry about perfection - just enjoy creating!</li>
         </ul>
       </Card>
     </div>

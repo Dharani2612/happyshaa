@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { MessageCircle, Heart, BarChart3, Book, Users, Smile, Phone, Gamepad2, Palette, BookOpen, Music2, Calendar, PhoneIcon, Settings as SettingsIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/hero-wellness.jpg";
@@ -14,41 +13,11 @@ import FixedDoodle from "@/components/FixedDoodle";
 import PinterestJournal from "@/components/PinterestJournal";
 import NotePad from "@/components/NotePad";
 import Contacts from "@/components/Contacts";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 type ActiveView = "chat" | "mood" | "dashboard" | "exercises" | "games" | "music" | "doodle" | "journal" | "notepad" | "contacts" | "settings";
 
 const Index = () => {
-  const navigate = useNavigate();
   const [activeView, setActiveView] = useState<ActiveView>("chat");
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate('/auth');
-      }
-    } catch (error) {
-      console.error('Auth check error:', error);
-      navigate('/auth');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-companionship flex items-center justify-center">
-        <p className="text-foreground text-lg">Loading...</p>
-      </div>
-    );
-  }
 
   const renderContent = () => {
     switch (activeView) {
