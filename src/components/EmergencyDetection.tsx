@@ -88,7 +88,7 @@ const EmergencyDetection = () => {
       const { data: contacts, error } = await supabase
         .from('contacts')
         .select('*')
-        .eq('emergency', true);
+        .eq('emergency_contact', true);
 
       if (error) throw error;
 
