@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Canvas as FabricCanvas, PencilBrush, Circle, Rect, Triangle } from "fabric";
+import { Canvas as FabricCanvas, PencilBrush, Circle, Rect, Triangle, Line, Text as FabricText, Path, Polygon } from "fabric";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Palette, Eraser, Download, Trash2, Undo, Circle as CircleIcon, Square, Triangle as TriangleIcon, Pencil } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Palette, Eraser, Download, Trash2, Undo, Circle as CircleIcon, Square, Triangle as TriangleIcon, Pencil, Minus, Type, Star, Heart, Sparkles, RotateCw } from "lucide-react";
 import { toast } from "sonner";
 
 const FixedDoodle = () => {
@@ -12,8 +13,10 @@ const FixedDoodle = () => {
   const [activeColor, setActiveColor] = useState("#8b5cf6");
   const [brushSize, setBrushSize] = useState(5);
   const [isEraser, setIsEraser] = useState(false);
-  const [activeTool, setActiveTool] = useState<"draw" | "circle" | "square" | "triangle" | "line" | "text">("draw");
+  const [activeTool, setActiveTool] = useState<"draw" | "circle" | "square" | "triangle" | "line" | "text" | "star" | "heart">("draw");
   const [textInput, setTextInput] = useState("");
+  const [showTextInput, setShowTextInput] = useState(false);
+  const [actionCount, setActionCount] = useState(0);
 
   const colors = [
     "#8b5cf6", "#ec4899", "#3b82f6", "#10b981", 
@@ -36,7 +39,16 @@ const FixedDoodle = () => {
     canvas.freeDrawingBrush.width = brushSize;
 
     setFabricCanvas(canvas);
-    toast.success("Canvas ready! Start creating! 🎨");
+    
+    const welcomeMessages = [
+      "Your creative journey begins! 🎨✨",
+      "Canvas is ready for your masterpiece! 🌟",
+      "Let your imagination flow freely! 💫",
+      "Time to create something beautiful! 🎭",
+      "Your blank canvas awaits your magic! ✨",
+      "Ready to paint your emotions! 🌈"
+    ];
+    toast.success(welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)]);
 
     return () => {
       canvas.dispose();
@@ -63,7 +75,15 @@ const FixedDoodle = () => {
     fabricCanvas.clear();
     fabricCanvas.backgroundColor = "#ffffff";
     fabricCanvas.renderAll();
-    toast.success("Canvas cleared! ✨");
+    const clearMessages = [
+      "Fresh start! Your canvas is clean! ✨",
+      "Ready for a new creation! 🎨",
+      "Blank slate, endless possibilities! 🌟",
+      "Cleared! Time for something new! 💫",
+      "Fresh canvas, fresh ideas! 🎭",
+      "All clear! What will you create next? 🌈"
+    ];
+    toast.success(clearMessages[Math.floor(Math.random() * clearMessages.length)]);
   };
 
   const handleUndo = () => {
@@ -72,7 +92,15 @@ const FixedDoodle = () => {
     if (objects.length > 0) {
       fabricCanvas.remove(objects[objects.length - 1]);
       fabricCanvas.renderAll();
-      toast.success("Undone! ↩️");
+      const undoMessages = [
+        "Step back taken! ↩️",
+        "Reversed! Try again! 🔄",
+        "Undone! Keep creating! ✨",
+        "One step back, two steps forward! 💫",
+        "Removed! No worries! 🎨",
+        "Take your time, perfection takes patience! 🌟"
+      ];
+      toast.success(undoMessages[Math.floor(Math.random() * undoMessages.length)]);
     }
   };
 
@@ -87,25 +115,47 @@ const FixedDoodle = () => {
     link.download = `shalala-art-${Date.now()}.png`;
     link.href = dataURL;
     link.click();
-    toast.success("Artwork downloaded! 🎨");
+    const downloadMessages = [
+      "Your masterpiece is saved! 🎨✨",
+      "Art preserved! Beautiful work! 🌟",
+      "Downloaded! Your creativity is captured! 💫",
+      "Saved forever! Amazing creation! 🎭",
+      "Your art is now yours to keep! 🌈",
+      "Masterpiece downloaded! So proud of you! 💕"
+    ];
+    toast.success(downloadMessages[Math.floor(Math.random() * downloadMessages.length)]);
   };
 
-  const handleToolChange = (tool: "draw" | "circle" | "square" | "triangle") => {
+  const handleToolChange = (tool: "draw" | "circle" | "square" | "triangle" | "line" | "text" | "star" | "heart") => {
     if (!fabricCanvas) return;
     
     setActiveTool(tool);
     setIsEraser(false);
+    setShowTextInput(tool === "text");
     
     if (tool === "draw") {
       fabricCanvas.isDrawingMode = true;
+      const drawMessages = [
+        "Free drawing mode! Express yourself! ✏️",
+        "Pencil ready! Let your hand flow! 🎨",
+        "Draw anything your heart desires! 💫",
+        "Time to sketch your thoughts! ✨"
+      ];
+      toast.success(drawMessages[Math.floor(Math.random() * drawMessages.length)]);
+    } else if (tool === "text") {
+      fabricCanvas.isDrawingMode = false;
+      toast.info("Type your text and click 'Add Text' to place it! 📝");
     } else {
       fabricCanvas.isDrawingMode = false;
       
       let shape;
+      const randomX = Math.random() * 400 + 100;
+      const randomY = Math.random() * 300 + 100;
+      
       if (tool === "circle") {
         shape = new Circle({
-          left: 100,
-          top: 100,
+          left: randomX,
+          top: randomY,
           radius: 50,
           fill: activeColor,
           stroke: activeColor,
@@ -113,8 +163,8 @@ const FixedDoodle = () => {
         });
       } else if (tool === "square") {
         shape = new Rect({
-          left: 100,
-          top: 100,
+          left: randomX,
+          top: randomY,
           width: 100,
           height: 100,
           fill: activeColor,
@@ -123,13 +173,46 @@ const FixedDoodle = () => {
         });
       } else if (tool === "triangle") {
         shape = new Triangle({
-          left: 100,
-          top: 100,
+          left: randomX,
+          top: randomY,
           width: 100,
           height: 100,
           fill: activeColor,
           stroke: activeColor,
           strokeWidth: 2,
+        });
+      } else if (tool === "line") {
+        shape = new Line([randomX, randomY, randomX + 150, randomY + 100], {
+          stroke: activeColor,
+          strokeWidth: brushSize,
+        });
+      } else if (tool === "star") {
+        const starPoints = [];
+        const outerRadius = 50;
+        const innerRadius = 25;
+        for (let i = 0; i < 10; i++) {
+          const radius = i % 2 === 0 ? outerRadius : innerRadius;
+          const angle = (i * Math.PI) / 5 - Math.PI / 2;
+          starPoints.push({
+            x: randomX + radius * Math.cos(angle),
+            y: randomY + radius * Math.sin(angle)
+          });
+        }
+        shape = new Polygon(starPoints, {
+          fill: activeColor,
+          stroke: activeColor,
+          strokeWidth: 2,
+        });
+      } else if (tool === "heart") {
+        const heartPath = "M 0,20 C -20,0 -40,10 -40,30 C -40,50 -20,70 0,80 C 20,70 40,50 40,30 C 40,10 20,0 0,20 Z";
+        shape = new Path(heartPath, {
+          left: randomX,
+          top: randomY,
+          fill: activeColor,
+          stroke: activeColor,
+          strokeWidth: 2,
+          scaleX: 1,
+          scaleY: 1
         });
       }
       
@@ -137,8 +220,84 @@ const FixedDoodle = () => {
         fabricCanvas.add(shape);
         fabricCanvas.setActiveObject(shape);
         fabricCanvas.renderAll();
-        toast.success(`${tool} added! 🎨`);
+        
+        setActionCount(prev => prev + 1);
+        const shapeMessages = [
+          `Beautiful ${tool}! Love it! 🎨`,
+          `${tool} placed! Keep creating! ✨`,
+          `Gorgeous ${tool} added! 💫`,
+          `Perfect ${tool}! Your art is blooming! 🌟`,
+          `${tool} looks amazing there! 🎭`,
+          `Wonderful choice! That ${tool} is perfect! 💕`,
+          `${tool} added! You're doing great! 🌈`,
+          `Love that ${tool}! So creative! ✨`
+        ];
+        toast.success(shapeMessages[Math.floor(Math.random() * shapeMessages.length)]);
+        
+        // Encouraging messages every few actions
+        if (actionCount > 0 && actionCount % 5 === 0) {
+          const encouragements = [
+            "You're creating something truly special! Keep going! 🌟",
+            "Your artistic skills are shining through! 💫",
+            "Every stroke adds more beauty! Don't stop! ✨",
+            "This is turning out wonderfully! 🎨",
+            "You have such a creative eye! Amazing! 💕"
+          ];
+          setTimeout(() => {
+            toast(encouragements[Math.floor(Math.random() * encouragements.length)], {
+              duration: 3000,
+            });
+          }, 1000);
+        }
       }
+    }
+  };
+
+  const handleAddText = () => {
+    if (!fabricCanvas || !textInput.trim()) return;
+    
+    const text = new FabricText(textInput, {
+      left: Math.random() * 400 + 100,
+      top: Math.random() * 300 + 100,
+      fontSize: 30,
+      fill: activeColor,
+      fontFamily: 'Arial',
+    });
+    
+    fabricCanvas.add(text);
+    fabricCanvas.setActiveObject(text);
+    fabricCanvas.renderAll();
+    
+    const textMessages = [
+      "Text added! Words on canvas! 📝✨",
+      "Your message is now art! 💫",
+      "Beautiful text! Perfect placement! 🌟",
+      "Words that shine! Love it! ✨",
+      "Text looks fantastic! 🎨"
+    ];
+    toast.success(textMessages[Math.floor(Math.random() * textMessages.length)]);
+    
+    setTextInput("");
+    setShowTextInput(false);
+    setActiveTool("draw");
+    fabricCanvas.isDrawingMode = true;
+  };
+
+  const handleRotateSelected = () => {
+    if (!fabricCanvas) return;
+    const activeObject = fabricCanvas.getActiveObject();
+    if (activeObject) {
+      activeObject.rotate((activeObject.angle || 0) + 15);
+      fabricCanvas.renderAll();
+      const rotateMessages = [
+        "Rotated! New perspective! 🔄",
+        "Spin it! Looking good! ✨",
+        "Angle changed! Perfect! 💫",
+        "Turned! Love that rotation! 🌟"
+      ];
+      toast.success(rotateMessages[Math.floor(Math.random() * rotateMessages.length)]);
+    } else {
+      toast.info("Select a shape first to rotate it! 🎯");
     }
   };
 
@@ -163,13 +322,35 @@ const FixedDoodle = () => {
               onClick={() => handleToolChange("draw")}
               variant={activeTool === "draw" && !isEraser ? "default" : "outline"}
               size="sm"
+              title="Free Draw"
             >
               <Pencil className="w-4 h-4" />
             </Button>
             <Button
+              onClick={() => handleToolChange("line")}
+              variant={activeTool === "line" ? "default" : "outline"}
+              size="sm"
+              title="Line"
+            >
+              <Minus className="w-4 h-4" />
+            </Button>
+            <Button
+              onClick={() => handleToolChange("text")}
+              variant={activeTool === "text" ? "default" : "outline"}
+              size="sm"
+              title="Add Text"
+            >
+              <Type className="w-4 h-4" />
+            </Button>
+          </div>
+
+          {/* Shape Tools */}
+          <div className="flex gap-2 border-r border-border pr-4">
+            <Button
               onClick={() => handleToolChange("circle")}
               variant={activeTool === "circle" ? "default" : "outline"}
               size="sm"
+              title="Circle"
             >
               <CircleIcon className="w-4 h-4" />
             </Button>
@@ -177,6 +358,7 @@ const FixedDoodle = () => {
               onClick={() => handleToolChange("square")}
               variant={activeTool === "square" ? "default" : "outline"}
               size="sm"
+              title="Square"
             >
               <Square className="w-4 h-4" />
             </Button>
@@ -184,8 +366,25 @@ const FixedDoodle = () => {
               onClick={() => handleToolChange("triangle")}
               variant={activeTool === "triangle" ? "default" : "outline"}
               size="sm"
+              title="Triangle"
             >
               <TriangleIcon className="w-4 h-4" />
+            </Button>
+            <Button
+              onClick={() => handleToolChange("star")}
+              variant={activeTool === "star" ? "default" : "outline"}
+              size="sm"
+              title="Star"
+            >
+              <Star className="w-4 h-4" />
+            </Button>
+            <Button
+              onClick={() => handleToolChange("heart")}
+              variant={activeTool === "heart" ? "default" : "outline"}
+              size="sm"
+              title="Heart"
+            >
+              <Heart className="w-4 h-4" />
             </Button>
           </div>
 
@@ -240,7 +439,10 @@ const FixedDoodle = () => {
           </div>
 
           {/* Actions */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 border-l border-border pl-4">
+            <Button onClick={handleRotateSelected} variant="outline" size="sm" title="Rotate Selected">
+              <RotateCw className="w-4 h-4" />
+            </Button>
             <Button onClick={handleUndo} variant="outline" size="sm">
               <Undo className="w-4 h-4 mr-1" />
               Undo
@@ -256,6 +458,24 @@ const FixedDoodle = () => {
           </div>
         </div>
 
+        {/* Text Input Field */}
+        {showTextInput && (
+          <div className="flex gap-2 mb-4 items-center">
+            <Input
+              type="text"
+              placeholder="Type your text here..."
+              value={textInput}
+              onChange={(e) => setTextInput(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleAddText()}
+              className="flex-1"
+            />
+            <Button onClick={handleAddText} size="sm">
+              <Sparkles className="w-4 h-4 mr-1" />
+              Add Text
+            </Button>
+          </div>
+        )}
+
         {/* Canvas */}
         <div className="border border-border rounded-lg overflow-hidden shadow-gentle">
           <canvas ref={canvasRef} className="max-w-full" />
@@ -270,10 +490,13 @@ const FixedDoodle = () => {
         </h3>
         <ul className="space-y-2 text-muted-foreground">
           <li>• <strong>Draw Mode:</strong> Freehand drawing with adjustable brush size</li>
-          <li>• <strong>Shapes:</strong> Add circles, squares, and triangles to your art</li>
+          <li>• <strong>Shapes:</strong> Add circles, squares, triangles, stars, and hearts!</li>
+          <li>• <strong>Text:</strong> Add meaningful words to your artwork</li>
           <li>• <strong>Colors:</strong> Express emotions with our vibrant color palette</li>
-          <li>• <strong>Layers:</strong> Shapes can be moved and layered on top of each other</li>
+          <li>• <strong>Rotate:</strong> Select any shape and click rotate to change its angle</li>
+          <li>• <strong>Layers:</strong> Shapes can be moved, resized, and layered freely</li>
           <li>• <strong>Experiment:</strong> Don't worry about perfection - just enjoy creating!</li>
+          <li>• <strong>Art Therapy:</strong> Creating art helps reduce stress and express feelings</li>
         </ul>
       </Card>
     </div>

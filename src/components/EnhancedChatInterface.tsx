@@ -49,7 +49,20 @@ export const EnhancedChatInterface = () => {
     if ((lowerMessage.includes("i'm ") || lowerMessage.includes("my name is") || lowerMessage.includes("i am ")) && !userName) {
       const nameMatch = userMessage.match(/(?:i'm|my name is|i am)\s+([a-zA-Z]+)/i);
       if (nameMatch && nameMatch[1] && nameMatch[1].length > 1 && nameMatch[1].length < 20) {
-        setUserName(nameMatch[1]);
+        const extractedName = nameMatch[1];
+        setUserName(extractedName);
+        const greetingVariations = [
+          `${extractedName}! What a lovely name! 🌟 It's so nice to properly meet you. I'm really happy you're here, and I want you to know that you can share anything with me - the good, the bad, the confusing, whatever's on your heart. So, ${extractedName}, what would you like to talk about today?`,
+          `Oh, ${extractedName}! Thank you for sharing your name with me! 💕 Now our conversation feels even more personal and real. I'm here for you, ${extractedName}, ready to listen to whatever you need to share. What's on your mind right now?`,
+          `${extractedName} - I love that! 😊 Names are so special, aren't they? Thank you for trusting me with yours. I want you to feel completely comfortable here, ${extractedName}. This is your safe space to talk about anything. What would help you most right now?`,
+          `It's wonderful to meet you properly, ${extractedName}! 🤗 Your name is beautiful. I'm so glad you're here, and I want you to know I'm genuinely interested in getting to know you better. What brings you to chat with me today, ${extractedName}?`
+        ];
+        return {
+          text: greetingVariations[Math.floor(Math.random() * greetingVariations.length)],
+          mood: "caring",
+          suggestions: ["Tell me about your day", "I'm feeling down", "Just want to chat", "I need someone to listen"],
+          type: "greeting"
+        };
       }
     }
 
