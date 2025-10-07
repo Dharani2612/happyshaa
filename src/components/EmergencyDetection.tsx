@@ -97,23 +97,34 @@ const EmergencyDetection = () => {
         return;
       }
 
-      // Call each emergency contact
-      contacts.forEach((contact: any) => {
-        const phoneNumber = contact.phone.replace(/\D/g, '');
-        
-        // Check if device is mobile
-        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-          window.location.href = `tel:${phoneNumber}`;
-          toast.success(`Calling ${contact.name}...`);
-        } else {
-          // Desktop: show phone number
-          toast.info(`Emergency! Call ${contact.name} at ${contact.phone}`, {
-            duration: 30000,
+      toast.info(`Initiating emergency calls to ${contacts.length} contact(s)...`);
+
+      // Call each emergency contact via Twilio
+      const callPromises = contacts.map(async (contact: any) => {
+        try {
+          const { data, error: callError } = await supabase.functions.invoke('make-emergency-call', {
+            body: {
+              phoneNumber: contact.phone,
+              contactName: contact.name
+            }
           });
+
+          if (callError) throw callError;
+
+          if (data?.success) {
+            toast.success(`📞 Emergency call initiated to ${contact.name}`);
+            console.log('Call successful:', data);
+          } else {
+            throw new Error(data?.error || 'Unknown error');
+          }
+        } catch (err) {
+          console.error(`Error calling ${contact.name}:`, err);
+          toast.error(`Failed to call ${contact.name}`);
         }
       });
 
-      toast.success(`Emergency alerts sent to ${contacts.length} contact(s)`);
+      await Promise.all(callPromises);
+      toast.success(`Emergency calls completed!`);
       
     } catch (error) {
       console.error("Error making emergency calls:", error);
@@ -236,13 +247,20 @@ const EmergencyDetection = () => {
         <ul className="space-y-2 text-muted-foreground">
           <li>• <strong>Camera Monitoring:</strong> Uses your device camera to detect unusual activity</li>
           <li>• <strong>AI Detection:</strong> Advanced algorithms identify potential emergencies</li>
-          <li>• <strong>Auto-Alert:</strong> Automatically calls your emergency contacts</li>
+          <li>• <strong>Automated Calls:</strong> Makes real phone calls to emergency contacts via Twilio</li>
+          <li>• <strong>Voice Alert:</strong> Recipients hear an automated emergency message</li>
           <li>• <strong>Cancel Option:</strong> 10-second window to cancel false alarms</li>
           <li>• <strong>Privacy First:</strong> All processing happens locally on your device</li>
         </ul>
-        <p className="text-sm text-muted-foreground mt-4 p-3 bg-background/50 rounded-lg">
-          💡 <strong>Tip:</strong> Add emergency contacts in the Contacts section for this feature to work
-        </p>
+        <div className="space-y-2 mt-4">
+          <p className="text-sm text-muted-foreground p-3 bg-background/50 rounded-lg">
+            💡 <strong>Tip:</strong> Add emergency contacts in the Contacts section and mark them as emergency contacts
+          </p>
+          <p className="text-sm text-muted-foreground p-3 bg-primary/10 rounded-lg border border-primary/20">
+            📞 <strong>Setup Required:</strong> You need to configure Twilio credentials to enable automated calling. 
+            This ensures real phone calls are made when emergencies are detected.
+          </p>
+        </div>
       </Card>
     </div>
   );

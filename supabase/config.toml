@@ -1,1 +1,4 @@
 project_id = "wzynngxlkzfejpucmtim"
+
+[functions.make-emergency-call]
+verify_jwt = true
