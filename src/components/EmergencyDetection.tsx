@@ -74,12 +74,13 @@ const EmergencyDetection = () => {
       duration: 10000,
     });
 
-    // Wait 10 seconds before auto-calling
-    setTimeout(() => {
-      if (emergencyDetected) {
-        makeEmergencyCalls();
-      }
+    // Automatically call after 10 seconds unless cancelled
+    const timeoutId = setTimeout(() => {
+      makeEmergencyCalls();
     }, 10000);
+
+    // Store timeout ID so it can be cancelled
+    (window as any).emergencyTimeoutId = timeoutId;
   };
 
   const makeEmergencyCalls = async () => {
@@ -133,6 +134,11 @@ const EmergencyDetection = () => {
   };
 
   const cancelEmergency = () => {
+    // Cancel the automatic call timeout
+    if ((window as any).emergencyTimeoutId) {
+      clearTimeout((window as any).emergencyTimeoutId);
+      (window as any).emergencyTimeoutId = null;
+    }
     setEmergencyDetected(false);
     toast.info("Emergency alert cancelled");
   };

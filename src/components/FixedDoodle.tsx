@@ -13,15 +13,26 @@ const FixedDoodle = () => {
   const [activeColor, setActiveColor] = useState("#8b5cf6");
   const [brushSize, setBrushSize] = useState(5);
   const [isEraser, setIsEraser] = useState(false);
-  const [activeTool, setActiveTool] = useState<"draw" | "circle" | "square" | "triangle" | "line" | "text" | "star" | "heart">("draw");
+  const [activeTool, setActiveTool] = useState<"draw" | "circle" | "square" | "triangle" | "line" | "text" | "star" | "heart" | "flower" | "sun">("draw");
   const [textInput, setTextInput] = useState("");
   const [showTextInput, setShowTextInput] = useState(false);
   const [actionCount, setActionCount] = useState(0);
+  const [canvasBackground, setCanvasBackground] = useState("#ffffff");
 
   const colors = [
     "#8b5cf6", "#ec4899", "#3b82f6", "#10b981", 
     "#f59e0b", "#ef4444", "#6366f1", "#14b8a6",
-    "#f97316", "#a855f7", "#06b6d4", "#84cc16"
+    "#f97316", "#a855f7", "#06b6d4", "#84cc16",
+    "#ff69b4", "#ffd700", "#98fb98", "#dda0dd"
+  ];
+
+  const backgroundColors = [
+    { name: "White", color: "#ffffff" },
+    { name: "Cream", color: "#fffef0" },
+    { name: "Light Blue", color: "#e6f3ff" },
+    { name: "Light Pink", color: "#ffe6f0" },
+    { name: "Light Green", color: "#e6ffe6" },
+    { name: "Lavender", color: "#f0e6ff" }
   ];
 
   useEffect(() => {
@@ -126,7 +137,15 @@ const FixedDoodle = () => {
     toast.success(downloadMessages[Math.floor(Math.random() * downloadMessages.length)]);
   };
 
-  const handleToolChange = (tool: "draw" | "circle" | "square" | "triangle" | "line" | "text" | "star" | "heart") => {
+  const handleBackgroundChange = (bgColor: string) => {
+    if (!fabricCanvas) return;
+    fabricCanvas.backgroundColor = bgColor;
+    fabricCanvas.renderAll();
+    setCanvasBackground(bgColor);
+    toast.success("Background color changed! 🎨");
+  };
+
+  const handleToolChange = (tool: "draw" | "circle" | "square" | "triangle" | "line" | "text" | "star" | "heart" | "flower" | "sun") => {
     if (!fabricCanvas) return;
     
     setActiveTool(tool);
@@ -203,17 +222,73 @@ const FixedDoodle = () => {
           stroke: activeColor,
           strokeWidth: 2,
         });
-      } else if (tool === "heart") {
-        const heartPath = "M 0,20 C -20,0 -40,10 -40,30 C -40,50 -20,70 0,80 C 20,70 40,50 40,30 C 40,10 20,0 0,20 Z";
-        shape = new Path(heartPath, {
+      } else if (tool === "flower") {
+        // Create a simple flower shape
+        const petalCount = 8;
+        const centerRadius = 15;
+        const petalLength = 35;
+        
+        for (let i = 0; i < petalCount; i++) {
+          const angle = (i * 2 * Math.PI) / petalCount;
+          const petalX = randomX + Math.cos(angle) * petalLength;
+          const petalY = randomY + Math.sin(angle) * petalLength;
+          
+          const petal = new Circle({
+            left: petalX,
+            top: petalY,
+            radius: 20,
+            fill: activeColor,
+            stroke: activeColor,
+            strokeWidth: 1,
+            opacity: 0.8
+          });
+          fabricCanvas.add(petal);
+        }
+        
+        // Center of flower
+        const center = new Circle({
           left: randomX,
           top: randomY,
-          fill: activeColor,
-          stroke: activeColor,
+          radius: centerRadius,
+          fill: "#ffd700",
+          stroke: "#ffd700",
           strokeWidth: 2,
-          scaleX: 1,
-          scaleY: 1
         });
+        fabricCanvas.add(center);
+        fabricCanvas.renderAll();
+        
+        toast.success("Beautiful flower bloomed! 🌸");
+        return; // Exit early since we handled the shape
+      } else if (tool === "sun") {
+        // Create a sun shape
+        const sunCenter = new Circle({
+          left: randomX,
+          top: randomY,
+          radius: 40,
+          fill: "#ffd700",
+          stroke: "#ff8c00",
+          strokeWidth: 3,
+        });
+        fabricCanvas.add(sunCenter);
+        
+        // Add sun rays
+        for (let i = 0; i < 12; i++) {
+          const angle = (i * 2 * Math.PI) / 12;
+          const rayStartX = randomX + Math.cos(angle) * 45;
+          const rayStartY = randomY + Math.sin(angle) * 45;
+          const rayEndX = randomX + Math.cos(angle) * 70;
+          const rayEndY = randomY + Math.sin(angle) * 70;
+          
+          const ray = new Line([rayStartX, rayStartY, rayEndX, rayEndY], {
+            stroke: "#ff8c00",
+            strokeWidth: 4,
+          });
+          fabricCanvas.add(ray);
+        }
+        fabricCanvas.renderAll();
+        
+        toast.success("Bright sun shining! ☀️");
+        return; // Exit early since we handled the shape
       }
       
       if (shape) {
@@ -386,9 +461,41 @@ const FixedDoodle = () => {
             >
               <Heart className="w-4 h-4" />
             </Button>
+            <Button
+              onClick={() => handleToolChange("flower")}
+              variant={activeTool === "flower" ? "default" : "outline"}
+              size="sm"
+              title="Flower"
+            >
+              <Sparkles className="w-4 h-4" />
+            </Button>
+            <Button
+              onClick={() => handleToolChange("sun")}
+              variant={activeTool === "sun" ? "default" : "outline"}
+              size="sm"
+              title="Sun"
+            >
+              <Star className="w-4 h-4" />
+            </Button>
           </div>
 
-          {/* Color Palette */}
+          {/* Background Colors */}
+          <div className="flex gap-2 border-r border-border pr-4">
+            <span className="text-sm text-muted-foreground self-center">BG:</span>
+            {backgroundColors.map((bg) => (
+              <button
+                key={bg.color}
+                onClick={() => handleBackgroundChange(bg.color)}
+                className={`w-8 h-8 rounded border-2 transition-all ${
+                  canvasBackground === bg.color
+                    ? "border-foreground scale-110 shadow-lg"
+                    : "border-border hover:scale-105"
+                }`}
+                style={{ backgroundColor: bg.color }}
+                title={bg.name}
+              />
+            ))}
+          </div>
           <div className="flex flex-wrap gap-2">
             {colors.map((color) => (
               <button
