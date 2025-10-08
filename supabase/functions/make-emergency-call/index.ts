@@ -1,3 +1,4 @@
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -6,17 +7,20 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { phoneNumber, contactName } = await req.json();
-
-    if (!phoneNumber || !contactName) {
-      throw new Error('Phone number and contact name are required');
-    }
+    const { 
+      phoneNumber, 
+      contactName, 
+      gpsLocation, 
+      photoUrl,
+      sendSMS = true,
+      sendCall = true,
+      emergency911 = false
+    } = await req.json();
 
     const TWILIO_ACCOUNT_SID = Deno.env.get('TWILIO_ACCOUNT_SID');
     const TWILIO_AUTH_TOKEN = Deno.env.get('TWILIO_AUTH_TOKEN');
@@ -26,73 +30,143 @@ serve(async (req) => {
       throw new Error('Twilio credentials not configured');
     }
 
-    console.log(`Making emergency call to ${contactName} at ${phoneNumber}`);
+    console.log(`Emergency alert for ${contactName} at ${phoneNumber}`);
 
-    // Create TwiML for the call message
-    const twimlMessage = `
-      <Response>
-        <Say voice="alice">
-          Emergency alert! This is an automated emergency call from Shalala. 
-          Your loved one may need immediate assistance. 
-          Please call them back immediately or check on them as soon as possible. 
-          This is an automated emergency detection system. 
-          Emergency, emergency, emergency.
-        </Say>
-        <Pause length="2"/>
-        <Say voice="alice">
-          I repeat: This is an emergency alert from Shalala. 
-          Please respond immediately.
-        </Say>
-      </Response>
-    `.trim();
+    const results = {
+      sms: null,
+      call: null,
+      emergency911: null
+    };
 
-    // Make the call using Twilio API
-    const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Calls.json`;
+    // Construct emergency message
+    let messageText = `🚨 EMERGENCY ALERT from Shalala App\n\n`;
+    messageText += `${contactName}, your loved one may need immediate assistance!\n\n`;
     
-    const formData = new URLSearchParams();
-    formData.append('To', phoneNumber);
-    formData.append('From', TWILIO_PHONE_NUMBER);
-    formData.append('Twiml', twimlMessage);
+    if (gpsLocation) {
+      messageText += `📍 Location: ${gpsLocation.latitude}, ${gpsLocation.longitude}\n`;
+      messageText += `🗺️ Map: https://maps.google.com/?q=${gpsLocation.latitude},${gpsLocation.longitude}\n\n`;
+    }
+    
+    if (photoUrl) {
+      messageText += `📸 Photo: ${photoUrl}\n\n`;
+    }
+    
+    messageText += `⚡ Action Required: Please check on them IMMEDIATELY!`;
 
-    const response = await fetch(twilioUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Basic ' + btoa(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`),
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: formData.toString(),
-    });
+    // Send SMS if enabled
+    if (sendSMS) {
+      try {
+        const smsResponse = await fetch(
+          `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Basic ' + btoa(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`),
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+              To: phoneNumber,
+              From: TWILIO_PHONE_NUMBER,
+              Body: messageText
+            }),
+          }
+        );
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Twilio API error:', errorText);
-      throw new Error(`Twilio API error: ${response.status} - ${errorText}`);
+        const smsData = await smsResponse.json();
+        
+        if (smsResponse.ok) {
+          results.sms = { success: true, sid: smsData.sid };
+          console.log(`SMS sent successfully to ${contactName}: ${smsData.sid}`);
+        } else {
+          throw new Error(smsData.message || 'SMS failed');
+        }
+      } catch (smsError) {
+        console.error(`SMS error for ${contactName}:`, smsError);
+        results.sms = { success: false, error: smsError.message };
+      }
     }
 
-    const data = await response.json();
-    console.log('Call initiated successfully:', data);
+    // Make voice call if enabled
+    if (sendCall) {
+      try {
+        const voiceMessage = `This is an automated emergency alert from Shalala. ${contactName}, your loved one may need immediate assistance. `;
+        const voiceMessageWithLocation = gpsLocation 
+          ? `${voiceMessage} Their location is latitude ${gpsLocation.latitude}, longitude ${gpsLocation.longitude}. `
+          : voiceMessage;
+        const finalVoiceMessage = `${voiceMessageWithLocation} Please check on them immediately. This is an emergency notification.`;
+
+        const twimlMessage = `<?xml version="1.0" encoding="UTF-8"?>
+          <Response>
+            <Say voice="Polly.Joanna">${finalVoiceMessage}</Say>
+            <Pause length="1"/>
+            <Say voice="Polly.Joanna">Press any key to acknowledge this emergency.</Say>
+          </Response>`;
+
+        const callResponse = await fetch(
+          `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Calls.json`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Basic ' + btoa(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`),
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+              To: phoneNumber,
+              From: TWILIO_PHONE_NUMBER,
+              Twiml: twimlMessage
+            }),
+          }
+        );
+
+        const callData = await callResponse.json();
+        
+        if (callResponse.ok) {
+          results.call = { success: true, sid: callData.sid };
+          console.log(`Call initiated successfully to ${contactName}: ${callData.sid}`);
+        } else {
+          throw new Error(callData.message || 'Call failed');
+        }
+      } catch (callError) {
+        console.error(`Call error for ${contactName}:`, callError);
+        results.call = { success: false, error: callError.message };
+      }
+    }
+
+    // Call 911 if enabled (for demo, we'll just log it - in production, this would be handled carefully)
+    if (emergency911) {
+      console.log('⚠️ 911 Emergency call would be initiated here in production');
+      console.log('Location:', gpsLocation);
+      results.emergency911 = { 
+        success: true, 
+        note: 'In production, this would dial emergency services with location data' 
+      };
+    }
+
+    const overallSuccess = (sendSMS ? results.sms?.success : true) && 
+                          (sendCall ? results.call?.success : true);
 
     return new Response(
       JSON.stringify({ 
-        success: true, 
-        callSid: data.sid,
-        message: `Emergency call initiated to ${contactName}` 
-      }), 
+        success: overallSuccess,
+        results,
+        message: `Emergency alert sent to ${contactName}`
+      }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
+        status: overallSuccess ? 200 : 207 // 207 = Multi-Status (partial success)
       }
     );
+
   } catch (error) {
-    console.error('Error making emergency call:', error);
+    console.error('Error in make-emergency-call:', error);
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message 
-      }), 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500,
+        status: 500
       }
     );
   }

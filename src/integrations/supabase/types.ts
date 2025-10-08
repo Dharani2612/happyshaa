@@ -52,6 +52,81 @@ export type Database = {
           },
         ]
       }
+      emergency_logs: {
+        Row: {
+          contacts_notified: number | null
+          created_at: string
+          detection_type: string | null
+          gps_latitude: number | null
+          gps_longitude: number | null
+          id: string
+          photo_url: string | null
+          triggered_at: string
+          user_id: string
+          was_cancelled: boolean | null
+        }
+        Insert: {
+          contacts_notified?: number | null
+          created_at?: string
+          detection_type?: string | null
+          gps_latitude?: number | null
+          gps_longitude?: number | null
+          id?: string
+          photo_url?: string | null
+          triggered_at?: string
+          user_id: string
+          was_cancelled?: boolean | null
+        }
+        Update: {
+          contacts_notified?: number | null
+          created_at?: string
+          detection_type?: string | null
+          gps_latitude?: number | null
+          gps_longitude?: number | null
+          id?: string
+          photo_url?: string | null
+          triggered_at?: string
+          user_id?: string
+          was_cancelled?: boolean | null
+        }
+        Relationships: []
+      }
+      emergency_settings: {
+        Row: {
+          countdown_seconds: number | null
+          created_at: string
+          enable_911: boolean | null
+          enable_sms: boolean | null
+          enable_voice_call: boolean | null
+          id: string
+          sensitivity: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          countdown_seconds?: number | null
+          created_at?: string
+          enable_911?: boolean | null
+          enable_sms?: boolean | null
+          enable_voice_call?: boolean | null
+          id?: string
+          sensitivity?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          countdown_seconds?: number | null
+          created_at?: string
+          enable_911?: boolean | null
+          enable_sms?: boolean | null
+          enable_voice_call?: boolean | null
+          id?: string
+          sensitivity?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       game_scores: {
         Row: {
           created_at: string | null
