@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/hero-wellness.jpg";
 import { EnhancedChatInterface } from "@/components/EnhancedChatInterface";
 import { MoodJournal } from "@/components/MoodJournal";
-import { Dashboard } from "@/components/Dashboard";
+import { EnhancedDashboard } from "@/components/EnhancedDashboard";
 import Settings from "@/components/Settings";
 import { CBTExercises } from "@/components/CBTExercises";
 import InterestingGames from "@/components/InterestingGames";
@@ -26,7 +26,7 @@ const Index = () => {
       case "mood":
         return <MoodJournal />;
       case "dashboard":
-        return <Dashboard />;
+        return <EnhancedDashboard />;
       case "settings":
         return <Settings />;
       case "exercises":

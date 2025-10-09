@@ -15,9 +15,13 @@ import {
   Zap,
   Timer,
   Award,
-  Sparkles
+  Sparkles,
+  Gamepad2,
+  Candy
 } from "lucide-react";
 import { toast } from "sonner";
+import { TempleRunGame } from "./TempleRunGame";
+import { CandyCrushGame } from "./CandyCrushGame";
 
 const InterestingGames = () => {
   // Word Association Game
@@ -145,6 +149,20 @@ const InterestingGames = () => {
 
   const games = [
     {
+      id: "temple-run",
+      title: "Temple Run Adventure",
+      icon: Zap,
+      description: "Run, dodge obstacles, and collect coins in this thrilling endless runner!",
+      gradient: "from-yellow-400 to-orange-400"
+    },
+    {
+      id: "candy-crush",
+      title: "Sweet Candy Match",
+      icon: Candy,
+      description: "Match 3 or more candies to score points and reach the highest level!",
+      gradient: "from-pink-400 to-purple-400"
+    },
+    {
       id: "word-association",
       title: "Word Association Chain",
       icon: BookOpen,
@@ -183,7 +201,7 @@ const InterestingGames = () => {
 
       {/* Game Selection */}
       {!activeGame && (
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {games.map((game) => {
             const IconComponent = game.icon;
             return (
@@ -199,6 +217,26 @@ const InterestingGames = () => {
               </Card>
             );
           })}
+        </div>
+      )}
+
+      {/* Temple Run Game */}
+      {activeGame === "temple-run" && (
+        <div>
+          <Button variant="outline" onClick={() => setActiveGame(null)} className="mb-4">
+            ← Back to Games
+          </Button>
+          <TempleRunGame />
+        </div>
+      )}
+
+      {/* Candy Crush Game */}
+      {activeGame === "candy-crush" && (
+        <div>
+          <Button variant="outline" onClick={() => setActiveGame(null)} className="mb-4">
+            ← Back to Games
+          </Button>
+          <CandyCrushGame />
         </div>
       )}
 
