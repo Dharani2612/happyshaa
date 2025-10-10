@@ -1,0 +1,17 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Upgrade ChatGPT <your-email@example.com>
+Date: Thu, 10 Oct 2025 11:00:00 +0530
+Subject: [PATCH] Upgrade Happyshaa chatbot with ChatGPT and emotion-aware UI
+
+--- 
+ app.py                              | 65 ++++++++++++++++++++++++++++++----------------
+ templates/index.html                 | 86 ++++++++++++++++++++++++++++++++++++++++++++++----------
+ static/css/style.css                  | 65 +++++++++++++++++++++++++++++++++++++++++++++
+ requirements.txt                     |  3 +++
+ .gitignore                           |  5 +++
+ 5 files changed, 208 insertions(+), 16 deletions(-)
+ create mode 100644 requirements.txt
+ create mode 100644 .gitignore
+ create mode 100644 static/css/style.css
+ create mode 100644 templates/index.html
+--- 
