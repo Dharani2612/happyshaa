@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "predeploy": "npm run build",
+    "homepage": "https://dharani2612.github.io/happyshaa"
+
 "deploy": "gh-pages -d dist"
 
     "dev": "vite",
