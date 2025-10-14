@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { MessageCircle, Heart, BarChart3, Book, Users, Smile, Phone, Gamepad2, Palette, BookOpen, Music2, Calendar, PhoneIcon, Settings as SettingsIcon } from "lucide-react";
+import { MessageCircle, Heart, BarChart3, Book, Users, Smile, Phone, Gamepad2, Palette, BookOpen, Music2, Calendar, PhoneIcon, Settings as SettingsIcon, Bell, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import heroImage from "@/assets/hero-wellness.jpg";
 import { EnhancedChatInterface } from "@/components/EnhancedChatInterface";
 import { MoodJournal } from "@/components/MoodJournal";
@@ -13,11 +15,24 @@ import FixedDoodle from "@/components/FixedDoodle";
 import PinterestJournal from "@/components/PinterestJournal";
 import NotePad from "@/components/NotePad";
 import Contacts from "@/components/Contacts";
+import ScheduledNotifications from "@/components/ScheduledNotifications";
 
-type ActiveView = "chat" | "mood" | "dashboard" | "exercises" | "games" | "music" | "doodle" | "journal" | "notepad" | "contacts" | "settings";
+type ActiveView = "chat" | "mood" | "dashboard" | "exercises" | "games" | "music" | "doodle" | "journal" | "notepad" | "contacts" | "settings" | "notifications";
 
 const Index = () => {
   const [activeView, setActiveView] = useState<ActiveView>("chat");
+  const { toast } = useToast();
+
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast({
+        title: "Error signing out",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
 
   const renderContent = () => {
     switch (activeView) {
@@ -43,6 +58,8 @@ const Index = () => {
         return <NotePad />;
       case "contacts":
         return <Contacts />;
+      case "notifications":
+        return <ScheduledNotifications />;
       default:
         return <EnhancedChatInterface />;
     }
@@ -145,12 +162,28 @@ const Index = () => {
                 <span className="hidden sm:inline ml-1">Contacts</span>
               </Button>
               <Button
+                variant={activeView === "notifications" ? "companionship" : "nurturing"}
+                size="sm"
+                onClick={() => setActiveView("notifications")}
+              >
+                <Bell className="w-4 h-4" />
+                <span className="hidden sm:inline ml-1">Reminders</span>
+              </Button>
+              <Button
                 variant={activeView === "settings" ? "companionship" : "nurturing"}
                 size="sm"
                 onClick={() => setActiveView("settings")}
               >
                 <SettingsIcon className="w-4 h-4" />
                 <span className="hidden sm:inline ml-1">Settings</span>
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleSignOut}
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline ml-1">Sign Out</span>
               </Button>
             </div>
           </div>
