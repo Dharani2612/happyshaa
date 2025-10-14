@@ -32,7 +32,11 @@ serve(async (req) => {
 
     console.log(`Emergency alert for ${contactName} at ${phoneNumber}`);
 
-    const results = {
+    const results: {
+      sms: { success: boolean; sid?: string; error?: string } | null;
+      call: { success: boolean; sid?: string; error?: string } | null;
+      emergency911: { success: boolean; note?: string } | null;
+    } = {
       sms: null,
       call: null,
       emergency911: null
@@ -82,7 +86,7 @@ serve(async (req) => {
         }
       } catch (smsError) {
         console.error(`SMS error for ${contactName}:`, smsError);
-        results.sms = { success: false, error: smsError.message };
+        results.sms = { success: false, error: smsError instanceof Error ? smsError.message : 'SMS failed' };
       }
     }
 
@@ -128,7 +132,7 @@ serve(async (req) => {
         }
       } catch (callError) {
         console.error(`Call error for ${contactName}:`, callError);
-        results.call = { success: false, error: callError.message };
+        results.call = { success: false, error: callError instanceof Error ? callError.message : 'Call failed' };
       }
     }
 
